@@ -1,0 +1,197 @@
+<div class="container">
+
+    <h2 class="mb-4">
+        <i class="bi bi-wallet2 me-2"></i>
+        Expense Tracker Dashboard
+    </h2>
+
+    <!-- Summary Cards -->
+    <div class="row g-4">
+
+        <!-- Balance -->
+        <div class="col-md-4">
+
+            <div class="card border-primary shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-primary">
+
+                        <i class="bi bi-wallet2 me-2"></i>
+
+                        Current Balance
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        ₹ {{ balance | number:'1.0-2' }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Income -->
+        <div class="col-md-4">
+
+            <div class="card border-success shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-success">
+
+                        <i class="bi bi-arrow-down-circle me-2"></i>
+
+                        Total Income
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        ₹ {{ totalIncome | number:'1.0-2' }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Expense -->
+        <div class="col-md-4">
+
+            <div class="card border-danger shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-danger">
+
+                        <i class="bi bi-arrow-up-circle me-2"></i>
+
+                        Total Expense
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        ₹ {{ totalExpense | number:'1.0-2' }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card mt-4 shadow-sm">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-clock-history me-2"></i>
+
+                Recent Transactions
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th class="text-end">Amount</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let t of transactions | slice:0:5">
+
+                        <td>
+
+                            {{ t.date | date:'dd MMM yyyy' }}
+
+                        </td>
+
+                        <td>
+
+                            {{ t.title }}
+
+                        </td>
+
+                        <td>
+
+                            {{ t.category }}
+
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="badge"
+                                [class.bg-success]="t.type === 'income'"
+                                [class.bg-danger]="t.type === 'expense'">
+
+                                {{ t.type }}
+
+                            </span>
+
+                        </td>
+
+                        <td class="text-end fw-bold">
+
+                            <span
+                                [class.text-success]="t.type === 'income'"
+                                [class.text-danger]="t.type === 'expense'">
+
+                                {{ t.type === 'income' ? '+' : '-' }}
+                                ₹{{ t.amount | number:'1.0-2' }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr *ngIf="transactions.length === 0">
+
+                        <td colspan="5" class="text-center text-muted py-4">
+
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+
+                            No transactions available
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,248 @@
+<div class="container">
+
+    <h2 class="mb-4">Transactions</h2>
+
+    <!-- Transaction Form -->
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <form #transactionForm="ngForm" (ngSubmit)="save()">
+
+                <div class="row">
+
+                    <!-- Title -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">Title</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="title"
+                            #title="ngModel"
+                            [(ngModel)]="transaction.title"
+                            required>
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="title.invalid && title.touched">
+
+                            Title is required.
+
+                        </div>
+
+                    </div>
+
+                <!-- Category -->
+                <div class="col-md-6 mb-3">
+                
+                    <label class="form-label">Category</label>
+                
+                    <select class="form-select" name="category" #category="ngModel" [(ngModel)]="transaction.category" required>
+                
+                        <option value="" disabled>Select Category</option>
+                
+                        <option *ngFor="let c of categories" [value]="c">
+                
+                            {{ c }}
+                
+                        </option>
+                
+                    </select>
+                
+                    <div class="text-danger mt-1" *ngIf="category.invalid && category.touched">
+                
+                        Category is required.
+                
+                    </div>
+                
+                </div>
+
+                    <!-- Amount -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">Amount</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="amount"
+                            #amount="ngModel"
+                            [(ngModel)]="transaction.amount"
+                            required
+                            min="1">
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="amount.invalid && amount.touched">
+
+                            Enter an amount greater than 0.
+
+                        </div>
+
+                    </div>
+
+                    <!-- Type -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">Type</label>
+
+                        <select
+                            class="form-select"
+                            name="type"
+                            [(ngModel)]="transaction.type">
+
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">Date</label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="date"
+                            #date="ngModel"
+                            [(ngModel)]="transaction.date"
+                            required>
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="date.invalid && date.touched">
+
+                            Please select a date.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    [disabled]="transactionForm.invalid">
+
+                    <i class="bi bi-check-circle me-2"></i>
+
+                    {{ isEditing ? 'Update Transaction' : 'Add Transaction' }}
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card">
+
+        <div class="card-header">
+            Transaction History
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-striped align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th width="40"></th>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th class="text-end">Amount</th>
+                        <th width="60"></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let t of transactions">
+
+                        <td>
+
+                            <button
+                                class="btn btn-link text-primary p-0 border-0"
+                                (click)="edit(t)"
+                                title="Edit">
+
+                                <i class="bi bi-pencil fs-5"></i>
+
+                            </button>
+
+                        </td>
+
+                        <td>{{ t.date | date:'dd MMM yyyy' }}</td>
+
+                        <td>{{ t.title }}</td>
+
+                        <td>{{ t.category }}</td>
+
+                        <td>
+
+                            <span
+                                class="badge"
+                                [class.bg-success]="t.type === 'income'"
+                                [class.bg-danger]="t.type === 'expense'">
+
+                                {{ t.type }}
+
+                            </span>
+
+                        </td>
+
+                        <td class="text-end fw-bold">
+
+                            {{ t.type === 'income' ? '+' : '-' }}
+                            ₹{{ t.amount | number:'1.0-2' }}
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-outline-danger btn-sm"
+                                (click)="delete(t.id)"
+                                title="Delete">
+
+                                <i class="bi bi-trash"></i>
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    <tr *ngIf="transactions.length === 0">
+
+                        <td colspan="7" class="text-center text-muted py-4">
+
+                            No Transactions Found
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
