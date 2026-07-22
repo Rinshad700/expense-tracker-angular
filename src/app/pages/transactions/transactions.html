@@ -7,7 +7,7 @@
 
         <div class="card-body">
 
-            <form #transactionForm="ngForm" (ngSubmit)="save()">
+            <form #transactionForm="ngForm" (ngSubmit)="save(transactionForm)">
 
                 <div class="row">
 
@@ -31,6 +31,23 @@
                             Title is required.
 
                         </div>
+
+                    </div>
+
+                    <!-- Type -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">Type</label>
+
+                        <select
+                            class="form-select"
+                            name="type"
+                            [(ngModel)]="transaction.type">
+
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+
+                        </select>
 
                     </div>
 
@@ -83,22 +100,6 @@
 
                     </div>
 
-                    <!-- Type -->
-                    <div class="col-md-4 mb-3">
-
-                        <label class="form-label">Type</label>
-
-                        <select
-                            class="form-select"
-                            name="type"
-                            [(ngModel)]="transaction.type">
-
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-
-                        </select>
-
-                    </div>
 
                     <!-- Date -->
                     <div class="col-md-4 mb-3">
@@ -124,17 +125,13 @@
                     </div>
 
                 </div>
+<button type="submit" class="btn btn-success" [disabled]="transactionForm.invalid">
 
-                <button
-                    type="submit"
-                    class="btn btn-success"
-                    [disabled]="transactionForm.invalid">
+    <i class="bi bi-check-circle me-2"></i>
 
-                    <i class="bi bi-check-circle me-2"></i>
+    {{ isEditing ? 'Update Transaction' : 'Add Transaction' }}
 
-                    {{ isEditing ? 'Update Transaction' : 'Add Transaction' }}
-
-                </button>
+</button>
 
             </form>
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 import { Transaction } from '../../models/transaction';
 import { TransactionService } from '../../services/transaction.service';
@@ -16,6 +16,7 @@ export class TransactionsComponent implements OnInit {
 
   transactions: Transaction[] = [];
   isEditing = false;
+  showValidation = false;
 
   transaction: Transaction = {
     id: 0,
@@ -59,36 +60,41 @@ export class TransactionsComponent implements OnInit {
       : this.expenseCategories;
   }
 
-onTypeChange(): void {
-
-  if (!this.isEditing) {
-    this.transaction.category = '';
-  }
-
-}
-
-  save(): void {
-
-    if (this.isEditing) {
-      this.service.updateTransaction({ ...this.transaction });
-    } else {
-      this.transaction.id = Date.now();
-      this.service.addTransaction({ ...this.transaction });
+  onTypeChange(): void {
+    if (!this.isEditing) {
+      this.transaction.category = '';
     }
-
-    this.resetForm();
-
   }
+
+  save(form: NgForm): void {
+
+  this.showValidation = true;
+
+  if (!form.valid) {
+    return;
+  }
+
+  if (this.isEditing) {
+    this.service.updateTransaction({ ...this.transaction });
+  } else {
+    this.transaction.id = Date.now();
+    this.service.addTransaction({ ...this.transaction });
+  }
+
+  setTimeout(() => {
+    this.resetForm(form);
+  });
+}
 
   edit(transaction: Transaction): void {
 
     this.transaction = { ...transaction };
-
     this.isEditing = true;
+    this.showValidation = false;
 
   }
 
-  resetForm(): void {
+  resetForm(form?: NgForm): void {
 
     this.transaction = {
       id: 0,
@@ -100,6 +106,16 @@ onTypeChange(): void {
     };
 
     this.isEditing = false;
+    this.showValidation = false;
+
+    form?.resetForm({
+      id: 0,
+      title: '',
+      category: '',
+      amount: 0,
+      type: 'expense',
+      date: new Date().toISOString().substring(0, 10)
+    });
 
   }
 
@@ -110,5 +126,4 @@ onTypeChange(): void {
     }
 
   }
-
 }
