@@ -1,28 +1,74 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg">
 
     <div class="container">
 
         <a class="navbar-brand">
-            💰 Expense Tracker
+            <i class="bi bi-wallet2"></i>
+            Expense Tracker
         </a>
 
-        <div class="navbar-nav ms-auto">
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menu">
 
-            <a routerLink="/" class="nav-link">
-                Dashboard
-            </a>
+            <span class="navbar-toggler-icon"></span>
 
-            <a routerLink="/transactions" class="nav-link">
-                Transactions
-            </a>
+        </button>
 
-            <a routerLink="/reports" class="nav-link">
-                Reports
-            </a>
+        <div
+            class="collapse navbar-collapse"
+            id="menu">
 
-            <a routerLink="/settings" class="nav-link">
-                Settings
-            </a>
+            <div class="navbar-nav ms-auto">
+
+                <a
+                    routerLink="/"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{exact:true}"
+                    class="nav-link">
+
+                    <i class="bi bi-speedometer2"></i>
+
+                    Dashboard
+
+                </a>
+
+                <a
+                    routerLink="/transactions"
+                    routerLinkActive="active"
+                    class="nav-link">
+
+                    <i class="bi bi-cash-stack"></i>
+
+                    Transactions
+
+                </a>
+
+                <a
+                    routerLink="/reports"
+                    routerLinkActive="active"
+                    class="nav-link">
+
+                    <i class="bi bi-bar-chart-line"></i>
+
+                    Reports
+
+                </a>
+
+                <a
+                    routerLink="/settings"
+                    routerLinkActive="active"
+                    class="nav-link">
+
+                    <i class="bi bi-gear"></i>
+
+                    Settings
+
+                </a>
+
+            </div>
 
         </div>
 

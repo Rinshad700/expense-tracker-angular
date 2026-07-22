@@ -1,1 +1,90 @@
-/* You can add global styles to this file, and also import other style files */
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root{
+  --primary:#4f46e5;
+  --secondary:#06b6d4;
+  --success:#22c55e;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --light:#f8fafc;
+  --dark:#1e293b;
+  --card:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+html,body{
+  height:100%;
+}
+
+body{
+  background:linear-gradient(135deg,#eef2ff,#f8fafc);
+  color:var(--dark);
+}
+
+/* Cards */
+
+.card{
+  border:none;
+  border-radius:20px;
+  background:var(--card);
+  box-shadow:0 15px 35px rgba(15,23,42,.08);
+  transition:.35s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 20px 45px rgba(15,23,42,.12);
+}
+
+/* Buttons */
+
+.btn{
+  border-radius:12px;
+  font-weight:600;
+  padding:.7rem 1.2rem;
+  transition:.3s;
+}
+
+.btn-success{
+  background:linear-gradient(135deg,#4f46e5,#2563eb);
+  border:none;
+}
+
+.btn-success:hover{
+  transform:translateY(-2px);
+}
+
+/* Inputs */
+
+.form-control,
+.form-select{
+
+  border-radius:12px;
+  border:1px solid #d7dce7;
+  padding:.8rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus{
+
+  border-color:#4f46e5;
+  box-shadow:0 0 0 .2rem rgba(79,70,229,.2);
+
+}
+
+.table{
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.container{
+    padding-top:20px;
+    padding-bottom:20px;
+}
