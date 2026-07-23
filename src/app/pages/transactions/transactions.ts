@@ -44,7 +44,9 @@ export class TransactionsComponent implements OnInit {
     'Medical',
     'Entertainment',
     'Utilities',
-    'Other'
+    'Other',
+    'SIP',
+    'Petrol'
   ];
 
   constructor(private service: TransactionService) {}

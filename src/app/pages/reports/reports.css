@@ -1,0 +1,92 @@
+.report-hero{
+    background:linear-gradient(135deg,#4f46e5,#2563eb);
+    color:#fff;
+    border-radius:24px;
+    padding:35px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 20px 40px rgba(79,70,229,.25);
+}
+
+.hero-tag{
+    background:rgba(255,255,255,.15);
+    padding:6px 14px;
+    border-radius:20px;
+}
+
+.hero-icon{
+    width:100px;
+    height:100px;
+    border-radius:24px;
+    background:rgba(255,255,255,.15);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:45px;
+}
+
+.summary-card{
+    color:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 12px 30px rgba(15,23,42,.1);
+    transition:.3s;
+}
+
+.summary-card:hover{
+    transform:translateY(-8px);
+}
+
+.income{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.expense{
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+.balance{
+    background:linear-gradient(135deg,#6366f1,#4f46e5);
+}
+
+.summary-card h2{
+    margin-top:12px;
+    font-weight:700;
+}
+
+.card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 12px 30px rgba(15,23,42,.08);
+}
+
+.card-header{
+    background:white;
+    font-weight:600;
+    padding:18px 22px;
+}
+
+.card-body{
+    padding:24px;
+}
+
+canvas{
+    width:100% !important;
+    max-height:320px;
+}
+
+.list-group-item{
+    border:none;
+    padding:18px;
+}
+
+@media(max-width:768px){
+
+    .report-hero{
+        flex-direction:column;
+        text-align:center;
+        gap:20px;
+    }
+
+}
