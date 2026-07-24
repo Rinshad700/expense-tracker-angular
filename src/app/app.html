@@ -1,5 +1,15 @@
-<app-navbar></app-navbar>
+<button
+class="menu-btn d-md-none"
+(click)="navbar.toggleSidebar()">
 
-<div class="container mt-4">
-  <router-outlet></router-outlet>
+<i class="bi bi-list"></i>
+
+</button>
+
+<app-navbar #navbar></app-navbar>
+
+<div class="main-content">
+
+<router-outlet></router-outlet>
+
 </div>

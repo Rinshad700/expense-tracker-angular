@@ -1,0 +1,49 @@
+.main-content{
+
+    margin-left:250px;
+
+    padding:25px;
+
+    background:#f5f7fa;
+
+    min-height:100vh;
+
+}
+
+.menu-btn{
+
+    position:fixed;
+
+    top:15px;
+
+    left:15px;
+
+    width:45px;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:22px;
+
+    z-index:1200;
+
+}
+
+@media(max-width:768px){
+
+.main-content{
+
+    margin-left:0;
+
+    padding:70px 15px 20px;
+
+}
+
+}
