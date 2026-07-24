@@ -1,77 +1,76 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="sidebar">
 
-    <div class="container">
+    <div class="sidebar-header">
 
-        <a class="navbar-brand">
+        <a class="brand" routerLink="/">
+
             <i class="bi bi-wallet2"></i>
-            Expense Tracker
+
+            <span>Expense Tracker</span>
+
         </a>
 
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menu">
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div
-            class="collapse navbar-collapse"
-            id="menu">
-
-            <div class="navbar-nav ms-auto">
-
-                <a
-                    routerLink="/"
-                    routerLinkActive="active"
-                    [routerLinkActiveOptions]="{exact:true}"
-                    class="nav-link">
-
-                    <i class="bi bi-speedometer2"></i>
-
-                    Dashboard
-
-                </a>
-
-                <a
-                    routerLink="/transactions"
-                    routerLinkActive="active"
-                    class="nav-link">
-
-                    <i class="bi bi-cash-stack"></i>
-
-                    Transactions
-
-                </a>
-
-                <a
-                    routerLink="/reports"
-                    routerLinkActive="active"
-                    class="nav-link">
-
-                    <i class="bi bi-bar-chart-line"></i>
-
-                    Reports
-
-                </a>
-
-                <a
-                    routerLink="/settings"
-                    routerLinkActive="active"
-                    class="nav-link">
-
-                    <i class="bi bi-gear"></i>
-
-                    Settings
-
-                </a>
-
-            </div>
-
-        </div>
-
     </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+
+            <a
+                routerLink="/"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+
+                <i class="bi bi-speedometer2"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a
+                routerLink="/transactions"
+                routerLinkActive="active">
+
+                <i class="bi bi-cash-stack"></i>
+
+                <span>Transactions</span>
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a
+                routerLink="/reports"
+                routerLinkActive="active">
+
+                <i class="bi bi-bar-chart-line"></i>
+
+                <span>Reports</span>
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a
+                routerLink="/settings"
+                routerLinkActive="active">
+
+                <i class="bi bi-gear"></i>
+
+                <span>Settings</span>
+
+            </a>
+
+        </li>
+
+    </ul>
 
 </nav>

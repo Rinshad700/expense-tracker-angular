@@ -1,41 +1,44 @@
 <div class="container">
 
+    <!-- Page Header -->
+
     <div class="transaction-hero mb-4">
 
-    <div>
+        <div>
 
-        <span class="hero-tag">
-            Finance Manager
-        </span>
+            <span class="hero-tag">
+                Expense Manager
+            </span>
 
-        <h2 class="mt-2">
-            💸 Transactions
-        </h2>
+            <h2 class="mt-2">
+                💸 Expenses
+            </h2>
 
-        <p class="mb-0">
-            Track every income and expense in one place.
-        </p>
+            <p class="mb-0">
+                Manage and track all your expenses.
+            </p>
+
+        </div>
+
+        <div class="hero-icon">
+            <i class="bi bi-wallet2"></i>
+        </div>
 
     </div>
 
-    <div class="hero-icon">
+    <!-- Expense Form -->
 
-        <i class="bi bi-cash-stack"></i>
-
-    </div>
-
-</div>
-
-    <!-- Transaction Form -->
     <div class="card mb-4">
 
         <div class="card-body">
 
-            <form #transactionForm="ngForm" (ngSubmit)="save(transactionForm)">
+            <form #transactionForm="ngForm"
+                  (ngSubmit)="save(transactionForm)">
 
                 <div class="row">
 
                     <!-- Title -->
+
                     <div class="col-md-6 mb-3">
 
                         <label class="form-label">Title</label>
@@ -44,13 +47,12 @@
                             type="text"
                             class="form-control"
                             name="title"
-                            #title="ngModel"
                             [(ngModel)]="transaction.title"
+                            #title="ngModel"
                             required>
 
-                        <div
-                            class="text-danger mt-1"
-                            *ngIf="title.invalid && title.touched">
+                        <div class="text-danger mt-1"
+                             *ngIf="title.invalid && title.touched">
 
                             Title is required.
 
@@ -58,50 +60,45 @@
 
                     </div>
 
-                    <!-- Type -->
-                    <div class="col-md-4 mb-3">
+                    <!-- Category -->
 
-                        <label class="form-label">Type</label>
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">Category</label>
 
                         <select
                             class="form-select"
-                            name="type"
-                            [(ngModel)]="transaction.type">
+                            name="category"
+                            [(ngModel)]="transaction.category"
+                            #category="ngModel"
+                            required>
 
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
+                            <option value="" disabled>
+                                Select Category
+                            </option>
+
+                            <option
+                                *ngFor="let c of categories"
+                                [value]="c">
+
+                                {{ c }}
+
+                            </option>
 
                         </select>
 
-                    </div>
+                        <div class="text-danger mt-1"
+                             *ngIf="category.invalid && category.touched">
 
-                <!-- Category -->
-                <div class="col-md-6 mb-3">
-                
-                    <label class="form-label">Category</label>
-                
-                    <select class="form-select" name="category" #category="ngModel" [(ngModel)]="transaction.category" required>
-                
-                        <option value="" disabled>Select Category</option>
-                
-                        <option *ngFor="let c of categories" [value]="c">
-                
-                            {{ c }}
-                
-                        </option>
-                
-                    </select>
-                
-                    <div class="text-danger mt-1" *ngIf="category.invalid && category.touched">
-                
-                        Category is required.
-                
+                            Category is required.
+
+                        </div>
+
                     </div>
-                
-                </div>
 
                     <!-- Amount -->
-                    <div class="col-md-4 mb-3">
+
+                    <div class="col-md-6 mb-3">
 
                         <label class="form-label">Amount</label>
 
@@ -109,24 +106,23 @@
                             type="number"
                             class="form-control"
                             name="amount"
-                            #amount="ngModel"
                             [(ngModel)]="transaction.amount"
+                            #amount="ngModel"
                             required
                             min="1">
 
-                        <div
-                            class="text-danger mt-1"
-                            *ngIf="amount.invalid && amount.touched">
+                        <div class="text-danger mt-1"
+                             *ngIf="amount.invalid && amount.touched">
 
-                            Enter an amount greater than 0.
+                            Enter a valid amount.
 
                         </div>
 
                     </div>
 
-
                     <!-- Date -->
-                    <div class="col-md-4 mb-3">
+
+                    <div class="col-md-6 mb-3">
 
                         <label class="form-label">Date</label>
 
@@ -134,28 +130,31 @@
                             type="date"
                             class="form-control"
                             name="date"
-                            #date="ngModel"
                             [(ngModel)]="transaction.date"
+                            #date="ngModel"
                             required>
 
-                        <div
-                            class="text-danger mt-1"
-                            *ngIf="date.invalid && date.touched">
+                        <div class="text-danger mt-1"
+                             *ngIf="date.invalid && date.touched">
 
-                            Please select a date.
+                            Date is required.
 
                         </div>
 
                     </div>
 
                 </div>
-<button type="submit" class="btn btn-success" [disabled]="transactionForm.invalid">
 
-    <i class="bi bi-check-circle me-2"></i>
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    [disabled]="transactionForm.invalid">
 
-    {{ isEditing ? 'Update Transaction' : 'Add Transaction' }}
+                    <i class="bi bi-check-circle me-2"></i>
 
-</button>
+                    {{ isEditing ? 'Update Expense' : 'Add Expense' }}
+
+                </button>
 
             </form>
 
@@ -163,28 +162,30 @@
 
     </div>
 
-    <!-- Transaction History -->
+    <!-- Expense History -->
+
     <div class="card">
 
-        <div class="card-header">
-            Transaction History
+        <div class="card-header fw-semibold">
+
+            Expense History
+
         </div>
 
         <div class="card-body">
 
-            <table class="table table-striped align-middle">
+            <table class="table table-hover align-middle">
 
                 <thead>
 
                     <tr>
 
-                        <th width="40"></th>
+                        <th width="50"></th>
                         <th>Date</th>
                         <th>Title</th>
                         <th>Category</th>
-                        <th>Type</th>
                         <th class="text-end">Amount</th>
-                        <th width="60"></th>
+                        <th width="70"></th>
 
                     </tr>
 
@@ -197,11 +198,10 @@
                         <td>
 
                             <button
-                                class="btn btn-link text-primary p-0 border-0"
-                                (click)="edit(t)"
-                                title="Edit">
+                                class="btn btn-link text-primary p-0"
+                                (click)="edit(t)">
 
-                                <i class="bi bi-pencil fs-5"></i>
+                                <i class="bi bi-pencil"></i>
 
                             </button>
 
@@ -213,23 +213,9 @@
 
                         <td>{{ t.category }}</td>
 
-                        <td>
+                        <td class="text-end text-danger fw-semibold">
 
-                            <span
-                                class="badge"
-                                [class.bg-success]="t.type === 'income'"
-                                [class.bg-danger]="t.type === 'expense'">
-
-                                {{ t.type }}
-
-                            </span>
-
-                        </td>
-
-                        <td class="text-end fw-bold">
-
-                            {{ t.type === 'income' ? '+' : '-' }}
-                            ₹{{ t.amount | number:'1.0-2' }}
+                            ₹ {{ t.amount | number:'1.0-2' }}
 
                         </td>
 
@@ -237,8 +223,7 @@
 
                             <button
                                 class="btn btn-outline-danger btn-sm"
-                                (click)="delete(t.id)"
-                                title="Delete">
+                                (click)="delete(t.id)">
 
                                 <i class="bi bi-trash"></i>
 
@@ -250,9 +235,10 @@
 
                     <tr *ngIf="transactions.length === 0">
 
-                        <td colspan="7" class="text-center text-muted py-4">
+                        <td colspan="6"
+                            class="text-center text-muted py-4">
 
-                            No Transactions Found
+                            No Expenses Found
 
                         </td>
 

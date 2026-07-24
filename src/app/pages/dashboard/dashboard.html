@@ -1,27 +1,14 @@
 <div class="container py-4">
 
-    <!-- Hero Banner -->
+    <!-- Page Header -->
 
-    <div class="hero">
-<div class="hero-circle hero-circle-1"></div>
-<div class="hero-circle hero-circle-2"></div>
-        <div>
+    <div class="page-header">
 
-            <span class="welcome-text">
-                Welcome Back 👋
-            </span>
+        <div class="page-title">
 
-            <h1>Expense Tracker</h1>
+            <h2>Dashboard</h2>
 
-            <p>
-                Manage your money smarter and stay in control.
-            </p>
-
-        </div>
-
-        <div class="hero-icon">
-
-            <i class="bi bi-wallet2"></i>
+            <p>Track and manage your expenses efficiently.</p>
 
         </div>
 
@@ -29,81 +16,64 @@
 
     <!-- Summary Cards -->
 
-    <div class="row mt-4 g-4">
+<div class="row mb-4 g-4">
 
-        <div class="col-md-4">
+    <!-- Current Month Expense -->
+    <div class="col-md-6">
 
-            <div class="summary-card balance">
+        <div class="summary-card">
 
-                <div class="summary-icon">
-
-                    <i class="bi bi-wallet-fill"></i>
-
-                </div>
-
-                <span>Current Balance</span>
-
-                <h2>₹ {{ balance | number:'1.0-2' }}</h2>
-
+            <div class="summary-icon text-danger">
+                <i class="bi bi-calendar-month"></i>
             </div>
 
-        </div>
+            <small>{{ currentDate | date:'MMMM yyyy' }}</small>
 
-        <div class="col-md-4">
+            <h3>₹ {{ currentMonthExpense | number:'1.0-2' }}</h3>
 
-            <div class="summary-card income">
-
-                <div class="summary-icon">
-
-                    <i class="bi bi-arrow-down-circle-fill"></i>
-
-                </div>
-
-                <span>Total Income</span>
-
-                <h2>₹ {{ totalIncome | number:'1.0-2' }}</h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-4">
-
-            <div class="summary-card expense">
-
-                <div class="summary-icon">
-
-                    <i class="bi bi-arrow-up-circle-fill"></i>
-
-                </div>
-
-                <span>Total Expense</span>
-
-                <h2>₹ {{ totalExpense | number:'1.0-2' }}</h2>
-
-            </div>
+            <p class="text-muted mb-0">Current Month Expense</p>
 
         </div>
 
     </div>
 
-    <!-- Recent Transactions -->
+    <!-- Today's Expense -->
+    <div class="col-md-6">
+
+        <div class="summary-card">
+
+            <div class="summary-icon text-primary">
+                <i class="bi bi-calendar-day"></i>
+            </div>
+
+            <small>{{ currentDate | date:'dd MMM yyyy' }}</small>
+
+            <h3>₹ {{ todayExpense | number:'1.0-2' }}</h3>
+
+            <p class="text-muted mb-0">Today's Expense</p>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Recent Expenses -->
 
     <div class="mt-5">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
 
-            <h3 class="fw-bold">
+            <h4 class="fw-semibold mb-0">
 
-                <i class="bi bi-clock-history text-primary"></i>
+                <i class="bi bi-clock-history me-2 text-primary"></i>
 
-                Recent Transactions
+                Recent Expenses
 
-            </h3>
+            </h4>
 
             <span class="text-muted">
 
-                {{ recentTransactions.length }} Transaction(s)
+                {{ recentTransactions.length }} Expense(s)
 
             </span>
 
@@ -117,16 +87,9 @@
 
                 <div class="transaction-left">
 
-                    <div
-                        class="transaction-icon"
-                        [ngClass]="transaction.type">
+                    <div class="transaction-icon expense">
 
-                        <i
-                            class="bi"
-                            [ngClass]="transaction.type === 'income'
-                                ? 'bi-arrow-down-circle-fill'
-                                : 'bi-arrow-up-circle-fill'">
-                        </i>
+                        <i class="bi bi-wallet2"></i>
 
                     </div>
 
@@ -144,25 +107,17 @@
 
                 <div class="transaction-right">
 
-                    <span
-                        class="badge"
-                        [ngClass]="transaction.type=='income'
-                            ? 'bg-success'
-                            : 'bg-danger'">
+                    <span class="badge bg-danger">
 
-                        {{ transaction.type }}
+                        Expense
 
                     </span>
 
-                    <h4
-                        [class.text-success]="transaction.type=='income'"
-                        [class.text-danger]="transaction.type=='expense'">
+                    <h5 class="text-danger mt-2">
 
-                        {{ transaction.type=='income' ? '+' : '-' }}
+                        ₹ {{ transaction.amount | number:'1.0-2' }}
 
-                        ₹ {{ transaction.amount }}
-
-                    </h4>
+                    </h5>
 
                 </div>
 
@@ -171,14 +126,14 @@
         </div>
 
         <div
-            *ngIf="recentTransactions.length==0"
+            *ngIf="recentTransactions.length === 0"
             class="empty-state">
 
             <i class="bi bi-wallet2"></i>
 
-            <h4>No Transactions Yet</h4>
+            <h4>No Expenses Found</h4>
 
-            <p>Add your first transaction.</p>
+            <p>Add your first expense to get started.</p>
 
         </div>
 

@@ -14,45 +14,67 @@ import { TransactionService } from '../../services/transaction.service';
 export class DashboardComponent implements OnInit {
 
   transactions: Transaction[] = [];
+  todayExpense = 0;
+  currentMonthExpense = 0;
+  currentDate = new Date();
 
-totalIncome = 0;
-totalExpense = 0;
-balance = 0;
-
-recentTransactions: Transaction[] = [];
-
+  recentTransactions: Transaction[] = [];
 
   constructor(
     private transactionService: TransactionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
-  this.transactionService.transactions$
-    .subscribe(data => {
+    this.transactionService.transactions$
+      .subscribe(data => {
 
-      this.transactions = data;
+        this.transactions = data;
 
-      this.calculateSummary();
+        this.calculateSummary();
 
-    });
+      });
 
-}
+  }
 
-  calculateSummary() {
+ calculateSummary(): void {
 
-  this.totalIncome = this.transactions
-    .filter(x => x.type === 'income')
-    .reduce((sum, x) => sum + x.amount, 0);
+  const today = new Date();
 
-  this.totalExpense = this.transactions
-    .filter(x => x.type === 'expense')
-    .reduce((sum, x) => sum + x.amount, 0);
+  // Current Month Expense
+  this.currentMonthExpense = this.transactions
+    .filter(t => {
 
-  this.balance = this.totalIncome - this.totalExpense;
+      const date = new Date(t.date);
 
+      return (
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+      );
+
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  // Today's Expense
+  this.todayExpense = this.transactions
+    .filter(t => {
+
+      const date = new Date(t.date);
+
+      return (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+      );
+
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  // Recent Expenses
   this.recentTransactions = [...this.transactions]
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
     .slice(0, 5);
 
 }

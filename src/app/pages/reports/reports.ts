@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart } from 'chart.js/auto';
 
-import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction';
+import { TransactionService } from '../../services/transaction.service';
 
 @Component({
   selector: 'app-reports',
@@ -16,76 +16,95 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   transactions: Transaction[] = [];
 
-  totalIncome = 0;
   totalExpense = 0;
-  balance = 0;
+  todayExpense = 0;
+  currentMonthExpense = 0;
+
+  topCategories: { category: string; amount: number }[] = [];
 
   barChart!: Chart;
   pieChart!: Chart;
 
-  constructor(private transactionService: TransactionService) {}
+  constructor(private service: TransactionService) {}
 
   ngOnInit(): void {
 
-    this.transactionService.transactions$.subscribe(data => {
+    this.service.transactions$.subscribe(data => {
 
       this.transactions = data;
 
       this.calculateSummary();
 
-      // Update charts only after they have been created
-      if (this.barChart) {
-        this.loadBarChart();
-      }
+      if (this.barChart) this.loadBarChart();
 
-      if (this.pieChart) {
-        this.loadPieChart();
-      }
+      if (this.pieChart) this.loadPieChart();
 
     });
 
   }
 
-  ngAfterViewInit(): void {
+ ngAfterViewInit(): void {
+
+  setTimeout(() => {
 
     this.loadBarChart();
-
     this.loadPieChart();
 
-  }
+  });
+
+}
 
   calculateSummary(): void {
 
-    this.totalIncome = this.transactions
-      .filter(t => t.type === 'income')
+    const today = new Date();
+
+    this.totalExpense = this.transactions.reduce((sum, t) => sum + t.amount, 0);
+
+    this.todayExpense = this.transactions
+      .filter(t => {
+
+        const d = new Date(t.date);
+
+        return d.toDateString() === today.toDateString();
+
+      })
       .reduce((sum, t) => sum + t.amount, 0);
 
-    this.totalExpense = this.transactions
-      .filter(t => t.type === 'expense')
+    this.currentMonthExpense = this.transactions
+      .filter(t => {
+
+        const d = new Date(t.date);
+
+        return d.getMonth() === today.getMonth() &&
+               d.getFullYear() === today.getFullYear();
+
+      })
       .reduce((sum, t) => sum + t.amount, 0);
 
-    this.balance = this.totalIncome - this.totalExpense;
-
-  }
-
-  loadBarChart(): void {
-
-    if (this.barChart) {
-      this.barChart.destroy();
-    }
-
-    const income = new Array(12).fill(0);
-    const expense = new Array(12).fill(0);
+    const map: { [key: string]: number } = {};
 
     this.transactions.forEach(t => {
 
-      const month = new Date(t.date).getMonth();
+      map[t.category] = (map[t.category] || 0) + t.amount;
 
-      if (t.type === 'income') {
-        income[month] += t.amount;
-      } else {
-        expense[month] += t.amount;
-      }
+    });
+
+    this.topCategories = Object.entries(map)
+      .map(([category, amount]) => ({ category, amount }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5);
+
+  }
+
+  loadBarChart() {
+
+    if (this.barChart) this.barChart.destroy();
+
+    const monthly = new Array(12).fill(0);
+
+    this.transactions.forEach(t => {
+
+      monthly[new Date(t.date).getMonth()] += t.amount;
 
     });
 
@@ -98,44 +117,51 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
 
         datasets: [
+
           {
-            label: 'Income',
-            data: income,
-            backgroundColor: '#22c55e'
-          },
-          {
-            label: 'Expense',
-            data: expense,
-            backgroundColor: '#ef4444'
+
+            label: 'Expenses',
+
+            data: monthly,
+
+            backgroundColor: '#2563eb'
+
           }
+
         ]
 
       },
 
       options: {
-        responsive: true
-      }
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true
+    }
+  }
+}
 
     });
 
   }
 
-  loadPieChart(): void {
+  loadPieChart() {
 
-    if (this.pieChart) {
-      this.pieChart.destroy();
-    }
+    if (this.pieChart) this.pieChart.destroy();
 
-    const categories: { [key: string]: number } = {};
+    const map: { [key: string]: number } = {};
 
-    this.transactions
-      .filter(t => t.type === 'expense')
-      .forEach(t => {
+    this.transactions.forEach(t => {
 
-        categories[t.category] =
-          (categories[t.category] || 0) + t.amount;
+      map[t.category] = (map[t.category] || 0) + t.amount;
 
-      });
+    });
 
     this.pieChart = new Chart('pieChart', {
 
@@ -143,27 +169,42 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
       data: {
 
-        labels: Object.keys(categories),
+        labels: Object.keys(map),
 
         datasets: [{
-          data: Object.values(categories),
+
+          data: Object.values(map),
+
           backgroundColor: [
-            '#6366f1',
-            '#22c55e',
+
+            '#2563eb',
             '#ef4444',
+            '#22c55e',
             '#f59e0b',
-            '#06b6d4',
             '#8b5cf6',
-            '#ec4899',
-            '#14b8a6'
+            '#06b6d4',
+            '#ec4899'
+
           ]
+
         }]
 
       },
 
       options: {
-        responsive: true
-      }
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true
+    }
+  }
+}
 
     });
 

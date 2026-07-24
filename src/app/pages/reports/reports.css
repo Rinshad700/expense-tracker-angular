@@ -1,92 +1,174 @@
 .report-hero{
-    background:linear-gradient(135deg,#4f46e5,#2563eb);
-    color:#fff;
-    border-radius:24px;
-    padding:35px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 20px 40px rgba(79,70,229,.25);
+
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+padding:35px;
+
+border-radius:20px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+color:white;
+
+box-shadow:0 15px 30px rgba(37,99,235,.25);
+
 }
 
 .hero-tag{
-    background:rgba(255,255,255,.15);
-    padding:6px 14px;
-    border-radius:20px;
+
+background:rgba(255,255,255,.15);
+
+padding:6px 14px;
+
+border-radius:20px;
+
+display:inline-block;
+
+margin-bottom:10px;
+
 }
 
 .hero-icon{
-    width:100px;
-    height:100px;
-    border-radius:24px;
-    background:rgba(255,255,255,.15);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:45px;
+
+width:90px;
+
+height:90px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,.15);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:40px;
+
 }
 
-.summary-card{
-    color:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 12px 30px rgba(15,23,42,.1);
-    transition:.3s;
+.stats-card{
+
+padding:25px;
+
+border-radius:18px;
+
+color:white;
+
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+transition:.3s;
+
 }
 
-.summary-card:hover{
-    transform:translateY(-8px);
+.stats-card:hover{
+
+transform:translateY(-5px);
+
 }
 
-.income{
-    background:linear-gradient(135deg,#22c55e,#16a34a);
+.red{
+
+background:#ef4444;
+
 }
 
-.expense{
-    background:linear-gradient(135deg,#ef4444,#dc2626);
+.blue{
+
+background:#2563eb;
+
 }
 
-.balance{
-    background:linear-gradient(135deg,#6366f1,#4f46e5);
+.green{
+
+background:#22c55e;
+
 }
 
-.summary-card h2{
-    margin-top:12px;
-    font-weight:700;
+.stats-card small{
+
+opacity:.9;
+
+font-size:14px;
+
+}
+
+.stats-card h2{
+
+margin-top:10px;
+
+font-weight:700;
+
 }
 
 .card{
-    border:none;
-    border-radius:20px;
-    box-shadow:0 12px 30px rgba(15,23,42,.08);
+
+border:none;
+
+border-radius:20px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+
 }
 
 .card-header{
-    background:white;
-    font-weight:600;
-    padding:18px 22px;
+
+background:white;
+
+font-weight:600;
+
+padding:18px;
+
 }
 
 .card-body{
-    padding:24px;
+    position: relative;
+    height: 350px;
+    padding: 20px;
 }
 
 canvas{
-    width:100% !important;
-    max-height:320px;
+    width: 100% !important;
+    height: 300px !important;
 }
 
-.list-group-item{
-    border:none;
-    padding:18px;
+canvas{
+
+max-height:250px !important;
+
+}
+
+table{
+
+margin-bottom:0;
+
 }
 
 @media(max-width:768px){
 
-    .report-hero{
-        flex-direction:column;
-        text-align:center;
-        gap:20px;
-    }
+.report-hero{
+
+flex-direction:column;
+
+text-align:center;
+
+gap:20px;
+
+}
+
+.hero-icon{
+
+width:70px;
+
+height:70px;
+
+font-size:30px;
+
+}
 
 }

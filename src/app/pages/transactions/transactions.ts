@@ -23,20 +23,10 @@ export class TransactionsComponent implements OnInit {
     title: '',
     category: '',
     amount: 0,
-    type: 'expense',
     date: new Date().toISOString().substring(0, 10)
   };
 
-  incomeCategories: string[] = [
-    'Salary',
-    'Bonus',
-    'Freelance',
-    'Interest',
-    'Investment',
-    'Other'
-  ];
-
-  expenseCategories: string[] = [
+  categories: string[] = [
     'Food',
     'Rent',
     'Transport',
@@ -44,54 +34,51 @@ export class TransactionsComponent implements OnInit {
     'Medical',
     'Entertainment',
     'Utilities',
-    'Other',
-    'SIP',
-    'Petrol'
+    'Education',
+    'Petrol',
+    'Travel',
+    'Other'
   ];
 
   constructor(private service: TransactionService) {}
 
   ngOnInit(): void {
+
     this.service.transactions$
       .subscribe(data => this.transactions = data);
-  }
 
-  get categories(): string[] {
-    return this.transaction.type === 'income'
-      ? this.incomeCategories
-      : this.expenseCategories;
-  }
-
-  onTypeChange(): void {
-    if (!this.isEditing) {
-      this.transaction.category = '';
-    }
   }
 
   save(form: NgForm): void {
 
-  this.showValidation = true;
+    this.showValidation = true;
 
-  if (!form.valid) {
-    return;
-  }
+    if (!form.valid) {
+      return;
+    }
 
-  if (this.isEditing) {
-    this.service.updateTransaction({ ...this.transaction });
-  } else {
-    this.transaction.id = Date.now();
-    this.service.addTransaction({ ...this.transaction });
-  }
+    if (this.isEditing) {
 
-  setTimeout(() => {
+      this.service.updateTransaction({ ...this.transaction });
+
+    } else {
+
+      this.transaction.id = Date.now();
+
+      this.service.addTransaction({ ...this.transaction });
+
+    }
+
     this.resetForm(form);
-  });
-}
+
+  }
 
   edit(transaction: Transaction): void {
 
     this.transaction = { ...transaction };
+
     this.isEditing = true;
+
     this.showValidation = false;
 
   }
@@ -103,11 +90,11 @@ export class TransactionsComponent implements OnInit {
       title: '',
       category: '',
       amount: 0,
-      type: 'expense',
       date: new Date().toISOString().substring(0, 10)
     };
 
     this.isEditing = false;
+
     this.showValidation = false;
 
     form?.resetForm({
@@ -115,7 +102,6 @@ export class TransactionsComponent implements OnInit {
       title: '',
       category: '',
       amount: 0,
-      type: 'expense',
       date: new Date().toISOString().substring(0, 10)
     });
 
@@ -123,9 +109,12 @@ export class TransactionsComponent implements OnInit {
 
   delete(id: number): void {
 
-    if (confirm('Delete this transaction?')) {
+    if (confirm('Delete this expense?')) {
+
       this.service.deleteTransaction(id);
+
     }
 
   }
+
 }
