@@ -1,0 +1,291 @@
+<div class="container-fluid my-5" *ngIf="trip">
+  <div class="row mb-4">
+    <div class="col-12">
+      <button class="btn btn-light mb-3" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back to Trips
+      </button>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1>{{ trip.name }}</h1>
+          <p class="text-muted">{{ trip.location }}</p>
+        </div>
+        <button class="btn btn-outline-danger" (click)="deleteTrip()">
+          <i class="bi bi-trash"></i> Delete Trip
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip Overview Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Status</h6>
+          <span class="badge" [ngClass]="trip.status === 'ongoing' ? 'bg-success' : trip.status === 'planned' ? 'bg-info' : 'bg-secondary'">
+            {{ trip.status | uppercase }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Duration</h6>
+          <small>{{ trip.startDate }} to {{ trip.endDate }}</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Total Spent</h6>
+          <h4>{{ getTotalSpent() | currency }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3" *ngIf="trip.budget">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Remaining Budget</h6>
+          <h4 [ngClass]="getRemainingBudget() < 0 ? 'text-danger' : 'text-success'">
+            {{ getRemainingBudget() | currency }}
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Progress -->
+  <div class="row mb-4" *ngIf="trip.budget">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+            <h6 class="card-title">Budget Progress</h6>
+            <small class="text-muted">{{ getTotalSpent() | currency }} / {{ trip.budget | currency }}</small>
+          </div>
+          <div class="progress" style="height: 25px;">
+            <div
+              class="progress-bar"
+              [ngClass]="getBudgetPercentage() > 100 ? 'bg-danger' : 'bg-success'"
+              [style.width.%]="Math.min(getBudgetPercentage(), 100)"
+            >
+              <span class="ms-2" *ngIf="getBudgetPercentage() > 0">{{ getBudgetPercentage() | number: '1.0-0' }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip Info Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title">Trip Information</h5>
+            <button class="btn btn-sm btn-outline-primary" (click)="toggleTripForm()">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+          </div>
+          <p>{{ trip.description || 'No description' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Trip Form -->
+  <div class="row mb-4" *ngIf="showTripForm">
+    <div class="col-12">
+      <div class="card border-primary">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Edit Trip</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Trip Name</label>
+              <input type="text" class="form-control" [(ngModel)]="tripFormData.name" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Location</label>
+              <input type="text" class="form-control" [(ngModel)]="tripFormData.location" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" [(ngModel)]="tripFormData.startDate" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" [(ngModel)]="tripFormData.endDate" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Budget (Optional)</label>
+              <input type="number" class="form-control" [(ngModel)]="tripFormData.budget" placeholder="0" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="tripFormData.status">
+                <option value="planned">Planned</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" [(ngModel)]="tripFormData.description" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="d-grid gap-2 d-md-flex">
+            <button class="btn btn-primary" (click)="saveTripChanges()">Save Changes</button>
+            <button class="btn btn-outline-secondary" (click)="toggleTripForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Expenses</h3>
+        <button class="btn btn-success" (click)="toggleExpenseForm()">
+          <i class="bi bi-plus-circle"></i> Add Expense
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Expense Form -->
+  <div class="row mb-4" *ngIf="showExpenseForm">
+    <div class="col-12">
+      <div class="card border-success">
+        <div class="card-body">
+          <h5 class="card-title mb-4">{{ editingExpense ? 'Edit Expense' : 'Add New Expense' }}</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Title *</label>
+              <input type="text" class="form-control" [(ngModel)]="expenseFormData.title" placeholder="e.g., Hotel" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Category *</label>
+              <select class="form-select" [(ngModel)]="expenseFormData.category">
+                <option *ngFor="let cat of categories">{{ cat }}</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Amount *</label>
+              <input type="number" class="form-control" [(ngModel)]="expenseFormData.amount" placeholder="0" step="0.01" />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Currency</label>
+              <input type="text" class="form-control" [(ngModel)]="expenseFormData.currency" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-control" [(ngModel)]="expenseFormData.date" />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Paid By (Optional)</label>
+              <input type="text" class="form-control" [(ngModel)]="expenseFormData.paidBy" placeholder="Your name" />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Notes</label>
+              <textarea class="form-control" [(ngModel)]="expenseFormData.notes" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="d-grid gap-2 d-md-flex">
+            <button class="btn btn-success" (click)="saveExpense()">Save Expense</button>
+            <button class="btn btn-outline-secondary" (click)="toggleExpenseForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses List -->
+  <div class="row" *ngIf="expenses.length > 0">
+    <div class="col-12 mb-4">
+      <div class="card">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Paid By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let expense of expenses">
+                <td>{{ expense.date }}</td>
+                <td>{{ expense.title }}</td>
+                <td><span class="badge bg-light text-dark">{{ expense.category }}</span></td>
+                <td>{{ expense.amount | currency }}</td>
+                <td><small class="text-muted">{{ expense.paidBy || '-' }}</small></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" (click)="toggleExpenseForm(expense)" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger ms-1" (click)="deleteExpense(expense.id)" title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses by Category -->
+  <div class="row" *ngIf="getExpensesByCategory().length > 0">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Breakdown by Category</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3" *ngFor="let item of getExpensesByCategory()">
+              <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">{{ item[0] }}</small>
+                <small class="fw-bold">{{ item[1] | currency }}</small>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div
+                  class="progress-bar bg-info"
+                  [style.width.%]="(item[1] / getTotalSpent()) * 100"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="row" *ngIf="expenses.length === 0 && !showExpenseForm">
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        <h5>No expenses yet</h5>
+        <p class="mb-0">Start tracking expenses for this trip</p>
+        <button class="btn btn-success btn-sm mt-3" (click)="toggleExpenseForm()">
+          <i class="bi bi-plus-circle"></i> Add First Expense
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Trip Not Found -->
+<div class="container-fluid my-5" *ngIf="!trip">
+  <div class="alert alert-warning">
+    <h5>Trip not found</h5>
+    <button class="btn btn-primary btn-sm" (click)="goBack()">Go Back</button>
+  </div>
+</div>

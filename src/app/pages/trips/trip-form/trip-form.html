@@ -1,0 +1,105 @@
+<div class="container-fluid my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h1 class="mb-4">Create New Trip</h1>
+
+      <div class="card">
+        <div class="card-body">
+          <form (ngSubmit)="submitForm()">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <label class="form-label">Trip Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="formData.name"
+                  name="name"
+                  placeholder="e.g., Europe Summer 2024"
+                  required
+                />
+              </div>
+
+              <div class="col-12 mb-3">
+                <label class="form-label">Location</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="formData.location"
+                  name="location"
+                  placeholder="e.g., Paris, France"
+                />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Start Date *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="formData.startDate"
+                  name="startDate"
+                  required
+                />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">End Date *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="formData.endDate"
+                  name="endDate"
+                  required
+                />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Budget (Optional)</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="formData.budget"
+                    name="budget"
+                    placeholder="0"
+                    step="0.01"
+                  />
+                </div>
+                <small class="text-muted">Leave empty for no budget limit</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="formData.status" name="status">
+                  <option value="planned">Planned</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+
+              <div class="col-12 mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  [(ngModel)]="formData.description"
+                  name="description"
+                  rows="4"
+                  placeholder="Add details about your trip..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Create Trip
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
