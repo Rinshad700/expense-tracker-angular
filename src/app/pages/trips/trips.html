@@ -51,7 +51,7 @@
               ></div>
             </div>
             <small [ngClass]="getRemainingBudget(trip) < 0 ? 'text-danger' : 'text-success'">
-              {{ getRemainingBudget(trip) >= 0 ? '$' : '-$' }}
+              {{ getRemainingBudget(trip) >= 0 ? '₹' : '-₹' }}
               {{ Math.abs(getRemainingBudget(trip)) | number: '1.2-2' }} remaining
             </small>
           </div>
