@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { TripExpense } from '../models/trip-expense';
+import { calculateSettlements } from '../utils/trip-settlement';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,46 @@ export class TripExpenseService {
     });
 
     return categoryMap;
+  }
+
+  getTripBalances(tripId: number): Array<{ participantName: string; amount: number }> {
+    const expenses = this.getExpensesByTrip(tripId);
+    const participantNames = new Set<string>();
+
+    expenses.forEach(expense => {
+      (expense.participants || []).forEach(name => participantNames.add(name));
+      if (expense.paidBy) {
+        participantNames.add(expense.paidBy);
+      }
+    });
+
+    const balances = Array.from(participantNames).map(participantName => ({
+      participantName,
+      amount: 0
+    }));
+
+    const balanceMap = new Map<string, number>(balances.map(balance => [balance.participantName, balance.amount]));
+
+    expenses.forEach(expense => {
+      if (expense.paidBy && balanceMap.has(expense.paidBy)) {
+        balanceMap.set(expense.paidBy, (balanceMap.get(expense.paidBy) || 0) + expense.amount);
+      }
+
+      (expense.splits || []).forEach(split => {
+        if (balanceMap.has(split.participantName)) {
+          balanceMap.set(split.participantName, (balanceMap.get(split.participantName) || 0) - split.amount);
+        }
+      });
+    });
+
+    return Array.from(balanceMap.entries()).map(([participantName, amount]) => ({
+      participantName,
+      amount: Number(amount.toFixed(2))
+    }));
+  }
+
+  getTripSettlements(tripId: number) {
+    return calculateSettlements(this.getTripBalances(tripId));
   }
 
   addExpense(expense: Omit<TripExpense, 'id'>): TripExpense {

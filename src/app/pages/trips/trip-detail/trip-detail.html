@@ -9,14 +9,18 @@
           <h1>{{ trip.name }}</h1>
           <p class="text-muted">{{ trip.location }}</p>
         </div>
-        <button class="btn btn-outline-danger" (click)="deleteTrip()">
-          <i class="bi bi-trash"></i> Delete Trip
-        </button>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" (click)="closeTrip()" *ngIf="trip.status !== 'completed'">
+            <i class="bi bi-lock"></i> Close Trip
+          </button>
+          <button class="btn btn-outline-danger" (click)="deleteTrip()">
+            <i class="bi bi-trash"></i> Delete Trip
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Trip Overview Cards -->
   <div class="row mb-4">
     <div class="col-md-3 mb-3">
       <div class="card">
@@ -40,7 +44,7 @@
       <div class="card">
         <div class="card-body">
           <h6 class="card-title text-muted">Total Spent</h6>
-          <h4>{{ getTotalSpent() | currency }}</h4>
+          <h4>{{ getTotalSpent() | currency:'INR':'symbol':'1.2-2' }}</h4>
         </div>
       </div>
     </div>
@@ -49,21 +53,20 @@
         <div class="card-body">
           <h6 class="card-title text-muted">Remaining Budget</h6>
           <h4 [ngClass]="getRemainingBudget() < 0 ? 'text-danger' : 'text-success'">
-            {{ getRemainingBudget() | currency }}
+            {{ getRemainingBudget() | currency:'INR':'symbol':'1.2-2' }}
           </h4>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Budget Progress -->
   <div class="row mb-4" *ngIf="trip.budget">
     <div class="col-12">
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between mb-3">
             <h6 class="card-title">Budget Progress</h6>
-            <small class="text-muted">{{ getTotalSpent() | currency }} / {{ trip.budget | currency }}</small>
+            <small class="text-muted">{{ getTotalSpent() | currency:'INR':'symbol':'1.2-2' }} / {{ trip.budget | currency:'INR':'symbol':'1.2-2' }}</small>
           </div>
           <div class="progress" style="height: 25px;">
             <div
@@ -79,7 +82,6 @@
     </div>
   </div>
 
-  <!-- Trip Info Section -->
   <div class="row mb-4">
     <div class="col-12">
       <div class="card">
@@ -91,12 +93,18 @@
             </button>
           </div>
           <p>{{ trip.description || 'No description' }}</p>
+          <div class="mt-3">
+            <h6 class="text-muted">Participants</h6>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge bg-primary" *ngFor="let participant of getTripParticipants()">{{ participant }}</span>
+              <span class="text-muted" *ngIf="getTripParticipants().length === 0">No participants added yet</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Edit Trip Form -->
   <div class="row mb-4" *ngIf="showTripForm">
     <div class="col-12">
       <div class="card border-primary">
@@ -132,6 +140,10 @@
               </select>
             </div>
             <div class="col-12 mb-3">
+              <label class="form-label">Participants</label>
+              <textarea class="form-control" [(ngModel)]="tripFormData.participantsText" rows="3"></textarea>
+            </div>
+            <div class="col-12 mb-3">
               <label class="form-label">Description</label>
               <textarea class="form-control" [(ngModel)]="tripFormData.description" rows="3"></textarea>
             </div>
@@ -145,7 +157,6 @@
     </div>
   </div>
 
-  <!-- Expenses Section -->
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -157,7 +168,6 @@
     </div>
   </div>
 
-  <!-- Add/Edit Expense Form -->
   <div class="row mb-4" *ngIf="showExpenseForm">
     <div class="col-12">
       <div class="card border-success">
@@ -166,7 +176,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Title *</label>
-              <input type="text" class="form-control" [(ngModel)]="expenseFormData.title" placeholder="e.g., Hotel" />
+              <input type="text" class="form-control" [(ngModel)]="expenseFormData.title" placeholder="e.g., Petrol" />
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Category *</label>
@@ -187,8 +197,71 @@
               <input type="date" class="form-control" [(ngModel)]="expenseFormData.date" />
             </div>
             <div class="col-12 mb-3">
-              <label class="form-label">Paid By (Optional)</label>
-              <input type="text" class="form-control" [(ngModel)]="expenseFormData.paidBy" placeholder="Your name" />
+              <label class="form-label">Paid By</label>
+              <select class="form-select" [(ngModel)]="expenseFormData.paidBy">
+                <option value="">Select payer</option>
+                <option *ngFor="let participant of getTripParticipants()" [value]="participant">{{ participant }}</option>
+              </select>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Participants in this expense</label>
+              <div class="multi-select-wrapper position-relative">
+                <button class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" type="button" (click)="toggleParticipantDropdown()">
+                  <span *ngIf="(expenseFormData.participants || []).length === 0" class="text-muted">Select participants...</span>
+                  <span *ngIf="(expenseFormData.participants || []).length > 0" class="flex-grow-1">
+                    {{ (expenseFormData.participants || []).join(', ') }}
+                  </span>
+                  <i class="bi" [ngClass]="showParticipantDropdown ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                </button>
+                <div class="multi-select-dropdown" *ngIf="showParticipantDropdown">
+                  <div class="multi-select-search">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="participantSearchText" [name]="'participantSearch'" placeholder="Search..." />
+                  </div>
+                  <div class="multi-select-options">
+                    <div class="multi-select-option" *ngFor="let participant of getFilteredParticipants()">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [id]="'participant-' + participant"
+                          [checked]="isParticipantSelected(participant)"
+                          (change)="toggleParticipant(participant)"
+                        />
+                        <label class="form-check-label" [for]="'participant-' + participant">
+                          {{ participant }}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="multi-select-empty" *ngIf="getFilteredParticipants().length === 0">
+                      <small class="text-muted">No participants found</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Split Type</label>
+              <select class="form-select" [(ngModel)]="expenseFormData.splitType">
+                <option value="equal">Equal split</option>
+                <option value="custom">Custom split</option>
+              </select>
+            </div>
+            <div class="col-12 mb-3" *ngIf="expenseFormData.splitType === 'equal' && getExpenseParticipants().length > 0">
+              <small class="text-muted">Each person will be assigned {{ expenseFormData.amount / getExpenseParticipants().length | currency:'INR':'symbol':'1.2-2' }}.</small>
+            </div>
+            <div class="col-12 mb-3" *ngIf="expenseFormData.splitType === 'custom'">
+              <label class="form-label">Custom split amounts</label>
+              <div class="row g-2" *ngFor="let split of expenseFormData.customSplits; let i = index">
+                <div class="col-md-7">
+                  <input class="form-control" [(ngModel)]="expenseFormData.customSplits[i].participantName" [name]="'customParticipant' + i" />
+                </div>
+                <div class="col-md-5">
+                  <input type="number" class="form-control" [(ngModel)]="expenseFormData.customSplits[i].amount" [name]="'customAmount' + i" step="0.01" />
+                </div>
+              </div>
+              <div class="form-text text-danger mt-2" *ngIf="getCustomSplitValidationMessage() as message">
+                {{ message }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label">Notes</label>
@@ -204,7 +277,6 @@
     </div>
   </div>
 
-  <!-- Expenses List -->
   <div class="row" *ngIf="expenses.length > 0">
     <div class="col-12 mb-4">
       <div class="card">
@@ -217,6 +289,7 @@
                 <th>Category</th>
                 <th>Amount</th>
                 <th>Paid By</th>
+                <th>Split</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -225,8 +298,11 @@
                 <td>{{ expense.date }}</td>
                 <td>{{ expense.title }}</td>
                 <td><span class="badge bg-light text-dark">{{ expense.category }}</span></td>
-                <td>{{ expense.amount | currency }}</td>
+                <td>{{ expense.amount | currency:'INR':'symbol':'1.2-2' }}</td>
                 <td><small class="text-muted">{{ expense.paidBy || '-' }}</small></td>
+                <td>
+                  <small class="text-muted">{{ getExpenseSplitSummary(expense) }}</small>
+                </td>
                 <td>
                   <button class="btn btn-sm btn-outline-primary" (click)="toggleExpenseForm(expense)" title="Edit">
                     <i class="bi bi-pencil"></i>
@@ -243,7 +319,38 @@
     </div>
   </div>
 
-  <!-- Expenses by Category -->
+  <div class="row mb-4" *ngIf="settlementBalances.length > 0">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Trip Settlement</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3" *ngFor="let balance of settlementBalances">
+              <div class="border rounded p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong>{{ balance.participantName }}</strong>
+                  <span [ngClass]="balance.amount >= 0 ? 'text-success' : 'text-danger'">
+                    {{ balance.amount >= 0 ? '+' : '' }}{{ balance.amount | currency:'INR':'symbol':'1.2-2' }}
+                  </span>
+                </div>
+                <small class="text-muted">{{ balance.amount >= 0 ? 'Should receive' : 'Should pay' }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4" *ngIf="settlementPlan.length > 0">
+            <h6>How to settle</h6>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of settlementPlan">
+                <span>{{ item.from }} pays {{ item.to }}</span>
+                <strong>{{ item.amount | currency:'INR':'symbol':'1.2-2' }}</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row" *ngIf="getExpensesByCategory().length > 0">
     <div class="col-12">
       <div class="card">
@@ -253,7 +360,7 @@
             <div class="col-md-6 mb-3" *ngFor="let item of getExpensesByCategory()">
               <div class="d-flex justify-content-between mb-2">
                 <small class="text-muted">{{ item[0] }}</small>
-                <small class="fw-bold">{{ item[1] | currency }}</small>
+                <small class="fw-bold">{{ item[1] | currency:'INR':'symbol':'1.2-2' }}</small>
               </div>
               <div class="progress" style="height: 8px;">
                 <div
@@ -268,7 +375,6 @@
     </div>
   </div>
 
-  <!-- Empty State -->
   <div class="row" *ngIf="expenses.length === 0 && !showExpenseForm">
     <div class="col-12">
       <div class="alert alert-info text-center">
@@ -282,7 +388,6 @@
   </div>
 </div>
 
-<!-- Trip Not Found -->
 <div class="container-fluid my-5" *ngIf="!trip">
   <div class="alert alert-warning">
     <h5>Trip not found</h5>

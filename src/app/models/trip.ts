@@ -7,5 +7,6 @@ export interface Trip {
   budget?: number;
   status: 'planned' | 'ongoing' | 'completed';
   location?: string;
+  participants?: string[];
   createdAt?: string;
 }

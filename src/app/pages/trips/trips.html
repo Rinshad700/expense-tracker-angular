@@ -40,7 +40,7 @@
             <div class="d-flex justify-content-between mb-2">
               <small class="text-muted">Budget</small>
               <small class="fw-bold">
-                {{ getTripTotal(trip.id) | currency }} / {{ trip.budget | currency }}
+                {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }} / {{ trip.budget | currency:'INR':'symbol':'1.2-2' }}
               </small>
             </div>
             <div class="progress">
@@ -103,7 +103,7 @@
 
           <div class="mb-3">
             <small class="text-muted">
-              Total Spent: {{ getTripTotal(trip.id) | currency }}
+              Total Spent: {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }}
             </small>
           </div>
 

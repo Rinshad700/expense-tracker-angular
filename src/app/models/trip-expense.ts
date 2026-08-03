@@ -1,3 +1,8 @@
+export interface TripExpenseSplit {
+  participantName: string;
+  amount: number;
+}
+
 export interface TripExpense {
   id: number;
   tripId: number;
@@ -8,4 +13,7 @@ export interface TripExpense {
   notes?: string;
   paidBy?: string;
   currency?: string;
+  participants?: string[];
+  splits?: TripExpenseSplit[];
+  splitType?: 'equal' | 'custom';
 }

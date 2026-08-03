@@ -77,6 +77,18 @@
                 </select>
               </div>
 
+              <div class="col-12 mb-3">
+                <label class="form-label">Participants</label>
+                <textarea
+                  class="form-control"
+                  [(ngModel)]="formData.participantsText"
+                  name="participantsText"
+                  rows="3"
+                  placeholder="Alice, Bob, Carol"
+                ></textarea>
+                <small class="text-muted">Type names separated by commas. These will be used for splitting later.</small>
+              </div>
+
               <div class="col-12 mb-4">
                 <label class="form-label">Description</label>
                 <textarea

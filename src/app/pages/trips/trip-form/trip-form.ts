@@ -19,7 +19,8 @@ export class TripFormComponent {
     endDate: '',
     budget: undefined as number | undefined,
     status: 'planned' as const,
-    location: ''
+    location: '',
+    participantsText: ''
   };
 
   submitted = false;
@@ -35,7 +36,15 @@ export class TripFormComponent {
       return;
     }
 
-    this.tripService.addTrip(this.formData);
+    const participants = this.formData.participantsText
+      .split(',')
+      .map(name => name.trim())
+      .filter(Boolean);
+
+    this.tripService.addTrip({
+      ...this.formData,
+      participants
+    });
     this.router.navigate(['/trips']);
   }
 
