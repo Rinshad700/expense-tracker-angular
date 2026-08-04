@@ -124,7 +124,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
             data: monthly,
 
-            backgroundColor: '#2563eb'
+            backgroundColor: '#4f46e5',
+
+            borderRadius: 6
 
           }
 
@@ -177,15 +179,17 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
           backgroundColor: [
 
-            '#2563eb',
+            '#4f46e5',
             '#ef4444',
-            '#22c55e',
+            '#10b981',
             '#f59e0b',
             '#8b5cf6',
             '#06b6d4',
             '#ec4899'
 
-          ]
+          ],
+
+          borderWidth: 0
 
         }]
 

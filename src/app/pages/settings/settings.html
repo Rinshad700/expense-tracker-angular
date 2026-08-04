@@ -1,1 +1,27 @@
-<p>settings works!</p>
+<div class="container pb-4">
+
+    <div class="app-topbar">
+        <div>
+            <h1>Settings</h1>
+            <p class="app-topbar-sub">Preferences for your account.</p>
+        </div>
+    </div>
+
+    <div class="app-row mb-4" *ngIf="authService.user$ | async as user">
+        <div class="app-row-left">
+            <div class="app-row-icon expense" style="background:var(--primary-soft);color:var(--primary);">
+                <i class="bi bi-person"></i>
+            </div>
+            <div>
+                <div class="app-row-title">{{ user.email }}</div>
+                <div class="app-row-sub">Signed in</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-outline-danger w-100" (click)="logOut()">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        Log Out
+    </button>
+
+</div>

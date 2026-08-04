@@ -18,7 +18,7 @@ import { calculateExpenseShares, validateCustomSplit } from '../../../utils/trip
 export class TripDetailComponent implements OnInit {
   trip: Trip | null = null;
   expenses: TripExpense[] = [];
-  tripId: number = 0;
+  tripId: string = '';
   Math = Math;
   settlementBalances: Array<{ participantName: string; amount: number }> = [];
   settlementPlan: Array<{ from: string; to: string; amount: number }> = [];
@@ -62,18 +62,22 @@ export class TripDetailComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.tripId = parseInt(params['id']);
+      this.tripId = params['id'];
       this.loadTrip();
       this.loadExpenses();
     });
   }
 
   loadTrip() {
-    const trip = this.tripService.getTrip(this.tripId);
-    if (trip) {
-      this.trip = trip;
-      this.populateTripForm();
-    }
+    this.tripService.trips$.subscribe(() => {
+      const trip = this.tripService.getTrip(this.tripId);
+      if (trip) {
+        this.trip = trip;
+        if (!this.showTripForm) {
+          this.populateTripForm();
+        }
+      }
+    });
   }
 
   loadExpenses() {
@@ -243,7 +247,7 @@ export class TripDetailComponent implements OnInit {
     this.editingExpense = null;
   }
 
-  deleteExpense(id: number) {
+  deleteExpense(id: string) {
     if (confirm('Delete this expense?')) {
       this.tripExpenseService.deleteExpense(id);
     }

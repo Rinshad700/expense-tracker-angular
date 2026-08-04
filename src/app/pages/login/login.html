@@ -1,0 +1,67 @@
+<div class="login-screen">
+
+  <div class="login-card">
+
+    <div class="login-brand">
+      <i class="bi bi-wallet2"></i>
+      <span>Expense Tracker</span>
+    </div>
+
+    <h1>{{ mode === 'signin' ? 'Welcome back' : 'Create your account' }}</h1>
+    <p class="login-sub">
+      {{ mode === 'signin' ? 'Sign in to sync your expenses across devices.' : 'Set up an account to save your expenses to the cloud.' }}
+    </p>
+
+    <form #loginForm="ngForm" (ngSubmit)="submit()">
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          [(ngModel)]="email"
+          required
+          autocomplete="email">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="password"
+          required
+          minlength="6"
+          [autocomplete]="mode === 'signin' ? 'current-password' : 'new-password'">
+      </div>
+
+      <div class="alert alert-danger py-2 px-3" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <button
+        class="btn btn-primary w-100"
+        type="submit"
+        [disabled]="loginForm.invalid || loading">
+        <span *ngIf="!loading">{{ mode === 'signin' ? 'Sign In' : 'Create Account' }}</span>
+        <span *ngIf="loading">Please wait...</span>
+      </button>
+
+    </form>
+
+    <p class="login-switch">
+      <ng-container *ngIf="mode === 'signin'">
+        Don't have an account?
+        <a (click)="toggleMode()">Create one</a>
+      </ng-container>
+      <ng-container *ngIf="mode === 'signup'">
+        Already have an account?
+        <a (click)="toggleMode()">Sign in</a>
+      </ng-container>
+    </p>
+
+  </div>
+
+</div>

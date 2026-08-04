@@ -1,12 +1,5 @@
 .card {
   border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-}
-
-h1 {
-  color: #2c3e50;
-  font-weight: 600;
 }
 
 .form-control,
@@ -36,11 +29,3 @@ h1 {
   color: #495057;
 }
 
-.btn-primary {
-  background-color: #0d6efd;
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #0b5ed7;
-}

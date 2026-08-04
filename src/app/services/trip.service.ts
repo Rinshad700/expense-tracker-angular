@@ -1,31 +1,61 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  updateDoc
+} from 'firebase/firestore';
+
 import { Trip } from '../models/trip';
+import { db } from '../firebase';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TripService {
 
-  private storageKey = 'trips';
-  private tripsSubject = new BehaviorSubject<Trip[]>(this.loadTrips());
+  private tripsSubject = new BehaviorSubject<Trip[]>([]);
   trips$ = this.tripsSubject.asObservable();
 
-  private loadTrips(): Trip[] {
-    const data = localStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : [];
-  }
+  private unsubscribeSnapshot: (() => void) | null = null;
 
-  private save(trips: Trip[]) {
-    localStorage.setItem(this.storageKey, JSON.stringify(trips));
-    this.tripsSubject.next(trips);
+  constructor(private authService: AuthService) {
+
+    this.authService.user$.subscribe(user => {
+
+      this.unsubscribeSnapshot?.();
+      this.unsubscribeSnapshot = null;
+
+      if (!user) {
+        this.tripsSubject.next([]);
+        return;
+      }
+
+      const q = query(
+        collection(db, 'users', user.uid, 'trips'),
+        orderBy('createdAt', 'desc')
+      );
+
+      this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
+        const trips = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Trip));
+        this.tripsSubject.next(trips);
+      });
+
+    });
+
   }
 
   getTrips(): Trip[] {
     return this.tripsSubject.value;
   }
 
-  getTrip(id: number): Trip | undefined {
+  getTrip(id: string): Trip | undefined {
     return this.tripsSubject.value.find(t => t.id === id);
   }
 
@@ -33,26 +63,28 @@ export class TripService {
     return this.tripsSubject.value.filter(t => t.status === 'ongoing' || t.status === 'planned');
   }
 
-  addTrip(trip: Omit<Trip, 'id' | 'createdAt'>): Trip {
-    const newTrip: Trip = {
+  addTrip(trip: Omit<Trip, 'id' | 'createdAt'>) {
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    return addDoc(collection(db, 'users', uid, 'trips'), {
       ...trip,
-      id: Date.now(),
       createdAt: new Date().toISOString()
-    };
-    const trips = [...this.tripsSubject.value, newTrip];
-    this.save(trips);
-    return newTrip;
+    });
   }
 
   updateTrip(updated: Trip) {
-    const trips = this.tripsSubject.value.map(t =>
-      t.id === updated.id ? updated : t
-    );
-    this.save(trips);
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    const { id, ...data } = updated;
+    return updateDoc(doc(db, 'users', uid, 'trips', id), data);
   }
 
-  deleteTrip(id: number) {
-    const trips = this.tripsSubject.value.filter(t => t.id !== id);
-    this.save(trips);
+  deleteTrip(id: string) {
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    return deleteDoc(doc(db, 'users', uid, 'trips', id));
   }
 }

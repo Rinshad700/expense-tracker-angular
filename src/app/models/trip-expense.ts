@@ -4,8 +4,8 @@ export interface TripExpenseSplit {
 }
 
 export interface TripExpense {
-  id: number;
-  tripId: number;
+  id: string;
+  tripId: string;
   title: string;
   category: string;
   amount: number;

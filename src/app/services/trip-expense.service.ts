@@ -1,44 +1,75 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  updateDoc,
+  writeBatch
+} from 'firebase/firestore';
+
 import { TripExpense } from '../models/trip-expense';
 import { calculateSettlements } from '../utils/trip-settlement';
+import { db } from '../firebase';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TripExpenseService {
 
-  private storageKey = 'tripExpenses';
-  private expensesSubject = new BehaviorSubject<TripExpense[]>(this.loadExpenses());
+  private expensesSubject = new BehaviorSubject<TripExpense[]>([]);
   expenses$ = this.expensesSubject.asObservable();
 
-  private loadExpenses(): TripExpense[] {
-    const data = localStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : [];
-  }
+  private unsubscribeSnapshot: (() => void) | null = null;
 
-  private save(expenses: TripExpense[]) {
-    localStorage.setItem(this.storageKey, JSON.stringify(expenses));
-    this.expensesSubject.next(expenses);
+  constructor(private authService: AuthService) {
+
+    this.authService.user$.subscribe(user => {
+
+      this.unsubscribeSnapshot?.();
+      this.unsubscribeSnapshot = null;
+
+      if (!user) {
+        this.expensesSubject.next([]);
+        return;
+      }
+
+      const q = query(
+        collection(db, 'users', user.uid, 'tripExpenses'),
+        orderBy('date', 'desc')
+      );
+
+      this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
+        const expenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TripExpense));
+        this.expensesSubject.next(expenses);
+      });
+
+    });
+
   }
 
   getExpenses(): TripExpense[] {
     return this.expensesSubject.value;
   }
 
-  getExpensesByTrip(tripId: number): TripExpense[] {
+  getExpensesByTrip(tripId: string): TripExpense[] {
     return this.expensesSubject.value.filter(e => e.tripId === tripId);
   }
 
-  getExpense(id: number): TripExpense | undefined {
+  getExpense(id: string): TripExpense | undefined {
     return this.expensesSubject.value.find(e => e.id === id);
   }
 
-  getTripExpenseTotal(tripId: number): number {
+  getTripExpenseTotal(tripId: string): number {
     return this.getExpensesByTrip(tripId).reduce((sum, e) => sum + e.amount, 0);
   }
 
-  getTripExpensesByCategory(tripId: number): Map<string, number> {
+  getTripExpensesByCategory(tripId: string): Map<string, number> {
     const expenses = this.getExpensesByTrip(tripId);
     const categoryMap = new Map<string, number>();
 
@@ -50,7 +81,7 @@ export class TripExpenseService {
     return categoryMap;
   }
 
-  getTripBalances(tripId: number): Array<{ participantName: string; amount: number }> {
+  getTripBalances(tripId: string): Array<{ participantName: string; amount: number }> {
     const expenses = this.getExpensesByTrip(tripId);
     const participantNames = new Set<string>();
 
@@ -86,34 +117,44 @@ export class TripExpenseService {
     }));
   }
 
-  getTripSettlements(tripId: number) {
+  getTripSettlements(tripId: string) {
     return calculateSettlements(this.getTripBalances(tripId));
   }
 
-  addExpense(expense: Omit<TripExpense, 'id'>): TripExpense {
-    const newExpense: TripExpense = {
-      ...expense,
-      id: Date.now()
-    };
-    const expenses = [...this.expensesSubject.value, newExpense];
-    this.save(expenses);
-    return newExpense;
+  addExpense(expense: Omit<TripExpense, 'id'>) {
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    return addDoc(collection(db, 'users', uid, 'tripExpenses'), expense);
   }
 
   updateExpense(updated: TripExpense) {
-    const expenses = this.expensesSubject.value.map(e =>
-      e.id === updated.id ? updated : e
-    );
-    this.save(expenses);
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    const { id, ...data } = updated;
+    return updateDoc(doc(db, 'users', uid, 'tripExpenses', id), data);
   }
 
-  deleteExpense(id: number) {
-    const expenses = this.expensesSubject.value.filter(e => e.id !== id);
-    this.save(expenses);
+  deleteExpense(id: string) {
+    const uid = this.authService.currentUid;
+    if (!uid) return Promise.resolve();
+
+    return deleteDoc(doc(db, 'users', uid, 'tripExpenses', id));
   }
 
-  deleteExpensesByTrip(tripId: number) {
-    const expenses = this.expensesSubject.value.filter(e => e.tripId !== tripId);
-    this.save(expenses);
+  async deleteExpensesByTrip(tripId: string) {
+    const uid = this.authService.currentUid;
+    if (!uid) return;
+
+    const toDelete = this.getExpensesByTrip(tripId);
+    if (toDelete.length === 0) return;
+
+    const batch = writeBatch(db);
+    toDelete.forEach(expense => {
+      batch.delete(doc(db, 'users', uid, 'tripExpenses', expense.id));
+    });
+
+    await batch.commit();
   }
 }

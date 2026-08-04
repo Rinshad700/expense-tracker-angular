@@ -11,14 +11,12 @@ import { RouterModule } from '@angular/router';
 })
 export class NavbarComponent {
 
-  isSidebarOpen = false;
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  closeSidebar() {
-    this.isSidebarOpen = false;
-  }
+  navItems = [
+    { path: '/', icon: 'bi-speedometer2', label: 'Dashboard', exact: true },
+    { path: '/transactions', icon: 'bi-cash-stack', label: 'Expenses', exact: false },
+    { path: '/trips', icon: 'bi-map', label: 'Trips', exact: false },
+    { path: '/reports', icon: 'bi-bar-chart-line', label: 'Reports', exact: false },
+    { path: '/settings', icon: 'bi-gear', label: 'Settings', exact: false },
+  ];
 
 }

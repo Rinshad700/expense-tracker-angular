@@ -1,14 +1,6 @@
-<button
-class="menu-btn d-md-none"
-(click)="navbar.toggleSidebar()">
+<app-navbar *ngIf="authService.user$ | async"></app-navbar>
 
-<i class="bi bi-list"></i>
-
-</button>
-
-<app-navbar #navbar></app-navbar>
-
-<div class="main-content">
+<div class="main-content" [class.with-nav]="authService.user$ | async">
 
 <router-outlet></router-outlet>
 

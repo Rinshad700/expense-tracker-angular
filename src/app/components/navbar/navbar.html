@@ -1,8 +1,9 @@
-<nav class="sidebar" [class.show]="isSidebarOpen">
+<!-- Desktop sidebar -->
+<nav class="sidebar app-hide-mobile">
 
     <div class="sidebar-header">
 
-        <a class="brand" routerLink="/" (click)="closeSidebar()">
+        <a class="brand" routerLink="/">
 
             <i class="bi bi-wallet2"></i>
 
@@ -10,84 +11,19 @@
 
         </a>
 
-        <button
-            class="btn btn-sm d-md-none"
-            (click)="closeSidebar()">
-
-            <i class="bi bi-x-lg"></i>
-
-        </button>
-
     </div>
 
     <ul class="sidebar-menu">
 
-        <li>
+        <li *ngFor="let item of navItems">
 
-            <a routerLink="/"
+            <a [routerLink]="item.path"
                routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}"
-               (click)="closeSidebar()">
+               [routerLinkActiveOptions]="{exact:item.exact}">
 
-                <i class="bi bi-speedometer2"></i>
+                <i class="bi" [ngClass]="item.icon"></i>
 
-                Dashboard
-
-            </a>
-
-        </li>
-
-        <li>
-
-            <a routerLink="/transactions"
-               routerLinkActive="active"
-               (click)="closeSidebar()">
-
-                <i class="bi bi-cash-stack"></i>
-
-                Transactions
-
-            </a>
-
-        </li>
-
-        <li>
-
-            <a routerLink="/trips"
-               routerLinkActive="active"
-               (click)="closeSidebar()">
-
-                <i class="bi bi-map"></i>
-
-                Trips
-
-            </a>
-
-        </li>
-
-        <li>
-
-            <a routerLink="/reports"
-               routerLinkActive="active"
-               (click)="closeSidebar()">
-
-                <i class="bi bi-bar-chart-line"></i>
-
-                Reports
-
-            </a>
-
-        </li>
-
-        <li>
-
-            <a routerLink="/settings"
-               routerLinkActive="active"
-               (click)="closeSidebar()">
-
-                <i class="bi bi-gear"></i>
-
-                Settings
+                {{ item.label }}
 
             </a>
 
@@ -97,9 +33,19 @@
 
 </nav>
 
-<div
-class="sidebar-overlay"
-*ngIf="isSidebarOpen"
-(click)="closeSidebar()">
+<!-- Mobile bottom tab bar -->
+<nav class="bottom-tabbar app-hide-desktop">
 
-</div>
+    <a *ngFor="let item of navItems"
+       [routerLink]="item.path"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact:item.exact}"
+       class="tab-item">
+
+        <i class="bi" [ngClass]="item.icon"></i>
+
+        <span>{{ item.label }}</span>
+
+    </a>
+
+</nav>

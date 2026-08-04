@@ -1,8 +1,6 @@
-.main-content{
+.main-content.with-nav{
 
-    margin-left:250px;
-
-    padding:25px;
+    margin-left:240px;
 
     background:#f5f7fa;
 
@@ -10,39 +8,13 @@
 
 }
 
-.menu-btn{
+@media(max-width:767px){
 
-    position:fixed;
-
-    top:15px;
-
-    left:15px;
-
-    width:45px;
-
-    height:45px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#2563eb;
-
-    color:white;
-
-    font-size:22px;
-
-    z-index:1200;
-
-}
-
-@media(max-width:768px){
-
-.main-content{
+.main-content.with-nav{
 
     margin-left:0;
 
-    padding:70px 15px 20px;
+    padding-bottom:calc(var(--bottom-nav-height) + var(--safe-bottom));
 
 }
 

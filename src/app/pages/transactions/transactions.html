@@ -1,175 +1,47 @@
-<div class="container">
+<div class="container pb-4">
 
-    <!-- Page Header -->
-
-    <div class="transaction-hero mb-4">
-
+    <!-- Top App Bar -->
+    <div class="app-topbar">
         <div>
-
-            <span class="hero-tag">
-                Expense Manager
-            </span>
-
-            <h2 class="mt-2">
-                💸 Expenses
-            </h2>
-
-            <p class="mb-0">
-                Manage and track all your expenses.
-            </p>
-
+            <h1>Expenses</h1>
+            <p class="app-topbar-sub">Manage and track all your expenses.</p>
         </div>
-
-        <div class="hero-icon">
-            <i class="bi bi-wallet2"></i>
-        </div>
-
-    </div>
-
-    <!-- Expense Form -->
-
-    <div class="card mb-4">
-
-        <div class="card-body">
-
-            <form #transactionForm="ngForm"
-                  (ngSubmit)="save(transactionForm)">
-
-                <div class="row">
-
-                    <!-- Title -->
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">Title</label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="title"
-                            [(ngModel)]="transaction.title"
-                            #title="ngModel"
-                            required>
-
-                        <div class="text-danger mt-1"
-                             *ngIf="title.invalid && title.touched">
-
-                            Title is required.
-
-                        </div>
-
-                    </div>
-
-                    <!-- Category -->
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">Category</label>
-
-                        <select
-                            class="form-select"
-                            name="category"
-                            [(ngModel)]="transaction.category"
-                            #category="ngModel"
-                            required>
-
-                            <option value="" disabled>
-                                Select Category
-                            </option>
-
-                            <option
-                                *ngFor="let c of categories"
-                                [value]="c">
-
-                                {{ c }}
-
-                            </option>
-
-                        </select>
-
-                        <div class="text-danger mt-1"
-                             *ngIf="category.invalid && category.touched">
-
-                            Category is required.
-
-                        </div>
-
-                    </div>
-
-                    <!-- Amount -->
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">Amount</label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            name="amount"
-                            [(ngModel)]="transaction.amount"
-                            #amount="ngModel"
-                            required
-                            min="1">
-
-                        <div class="text-danger mt-1"
-                             *ngIf="amount.invalid && amount.touched">
-
-                            Enter a valid amount.
-
-                        </div>
-
-                    </div>
-
-                    <!-- Date -->
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">Date</label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                            name="date"
-                            [(ngModel)]="transaction.date"
-                            #date="ngModel"
-                            required>
-
-                        <div class="text-danger mt-1"
-                             *ngIf="date.invalid && date.touched">
-
-                            Date is required.
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <button
-                    class="btn btn-primary"
-                    type="submit"
-                    [disabled]="transactionForm.invalid">
-
-                    <i class="bi bi-check-circle me-2"></i>
-
-                    {{ isEditing ? 'Update Expense' : 'Add Expense' }}
-
-                </button>
-
-            </form>
-
-        </div>
-
     </div>
 
     <!-- Expense History -->
 
-    <div class="card">
+    <div class="app-list app-hide-desktop" *ngIf="transactions.length > 0">
+
+        <div class="app-row" *ngFor="let t of transactions">
+
+            <div class="app-row-left" (click)="edit(t)">
+
+                <div class="app-row-icon expense">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+
+                <div>
+                    <div class="app-row-title">{{ t.title }}</div>
+                    <div class="app-row-sub">{{ t.category }} &middot; {{ t.date | date:'dd MMM yyyy' }}</div>
+                </div>
+
+            </div>
+
+            <div class="app-row-right">
+                <div class="amount-expense">₹ {{ t.amount | number:'1.0-2' }}</div>
+                <button class="row-delete" (click)="delete(t.id)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card app-hide-mobile" *ngIf="transactions.length > 0">
 
         <div class="card-header fw-semibold">
-
             Expense History
-
         </div>
 
         <div class="card-body">
@@ -196,50 +68,23 @@
                     <tr *ngFor="let t of transactions">
 
                         <td>
-
-                            <button
-                                class="btn btn-link text-primary p-0"
-                                (click)="edit(t)">
-
+                            <button class="btn btn-link text-primary p-0" (click)="edit(t)">
                                 <i class="bi bi-pencil"></i>
-
                             </button>
-
                         </td>
 
                         <td>{{ t.date | date:'dd MMM yyyy' }}</td>
-
                         <td>{{ t.title }}</td>
-
                         <td>{{ t.category }}</td>
 
                         <td class="text-end text-danger fw-semibold">
-
                             ₹ {{ t.amount | number:'1.0-2' }}
-
                         </td>
 
                         <td>
-
-                            <button
-                                class="btn btn-outline-danger btn-sm"
-                                (click)="delete(t.id)">
-
+                            <button class="btn btn-outline-danger btn-sm" (click)="delete(t.id)">
                                 <i class="bi bi-trash"></i>
-
                             </button>
-
-                        </td>
-
-                    </tr>
-
-                    <tr *ngIf="transactions.length === 0">
-
-                        <td colspan="6"
-                            class="text-center text-muted py-4">
-
-                            No Expenses Found
-
                         </td>
 
                     </tr>
@@ -251,5 +96,129 @@
         </div>
 
     </div>
+
+    <div *ngIf="transactions.length === 0" class="empty-state">
+
+        <i class="bi bi-wallet2"></i>
+        <h4>No Expenses Found</h4>
+        <p>Tap the + button to add your first expense.</p>
+
+    </div>
+
+</div>
+
+<!-- FAB to add a new expense -->
+<button class="fab" *ngIf="!showForm" (click)="toggleForm()">
+    <i class="bi bi-plus-lg"></i>
+</button>
+
+<!-- Add / Edit Expense Sheet -->
+<div class="sheet-overlay" *ngIf="showForm" (click)="toggleForm()"></div>
+
+<div class="form-sheet" *ngIf="showForm">
+
+    <div class="form-sheet-header">
+        <h5>{{ isEditing ? 'Update Expense' : 'Add Expense' }}</h5>
+        <button class="sheet-close" (click)="toggleForm()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form #transactionForm="ngForm" (ngSubmit)="save(transactionForm)" class="form-sheet-body">
+
+        <div class="mb-3">
+
+            <label class="form-label">Title</label>
+
+            <input
+                type="text"
+                class="form-control"
+                name="title"
+                [(ngModel)]="transaction.title"
+                #title="ngModel"
+                required>
+
+            <div class="text-danger mt-1" *ngIf="title.invalid && title.touched">
+                Title is required.
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">Category</label>
+
+            <select
+                class="form-select"
+                name="category"
+                [(ngModel)]="transaction.category"
+                #category="ngModel"
+                required>
+
+                <option value="" disabled>Select Category</option>
+
+                <option *ngFor="let c of categories" [value]="c">
+                    {{ c }}
+                </option>
+
+            </select>
+
+            <div class="text-danger mt-1" *ngIf="category.invalid && category.touched">
+                Category is required.
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">Amount</label>
+
+            <input
+                type="number"
+                class="form-control"
+                name="amount"
+                [(ngModel)]="transaction.amount"
+                #amount="ngModel"
+                required
+                min="1">
+
+            <div class="text-danger mt-1" *ngIf="amount.invalid && amount.touched">
+                Enter a valid amount.
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">Date</label>
+
+            <input
+                type="date"
+                class="form-control"
+                name="date"
+                [(ngModel)]="transaction.date"
+                #date="ngModel"
+                required>
+
+            <div class="text-danger mt-1" *ngIf="date.invalid && date.touched">
+                Date is required.
+            </div>
+
+        </div>
+
+        <div class="sticky-actions">
+
+            <button type="button" class="btn btn-outline-secondary" (click)="toggleForm()">
+                Cancel
+            </button>
+
+            <button class="btn btn-primary" type="submit" [disabled]="transactionForm.invalid">
+                <i class="bi bi-check-circle me-2"></i>
+                {{ isEditing ? 'Update' : 'Add' }}
+            </button>
+
+        </div>
+
+    </form>
 
 </div>

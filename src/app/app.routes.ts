@@ -7,34 +7,48 @@ import { SettingsComponent } from './pages/settings/settings';
 import { TripsComponent } from './pages/trips/trips';
 import { TripDetailComponent } from './pages/trips/trip-detail/trip-detail';
 import { TripFormComponent } from './pages/trips/trip-form/trip-form';
+import { LoginComponent } from './pages/login/login';
+import { authGuard, guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [guestGuard]
+  },
+  {
     path: '',
-    component: DashboardComponent
+    component: DashboardComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'transactions',
-    component: TransactionsComponent
+    component: TransactionsComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'trips',
-    component: TripsComponent
+    component: TripsComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'trips/new',
-    component: TripFormComponent
+    component: TripFormComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'trips/:id',
-    component: TripDetailComponent
+    component: TripDetailComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'reports',
-    component: ReportsComponent
+    component: ReportsComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'settings',
-    component: SettingsComponent
+    component: SettingsComponent,
+    canActivate: [authGuard]
   }
 ];

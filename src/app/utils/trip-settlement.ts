@@ -19,8 +19,8 @@ export interface TripExpenseSplit {
 }
 
 export interface TripExpenseRecord {
-  id: number;
-  tripId: number;
+  id: string;
+  tripId: string;
   title: string;
   category: string;
   amount: number;

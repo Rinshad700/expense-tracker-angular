@@ -1,62 +1,43 @@
-<div class="container-fluid my-5" *ngIf="trip">
-  <div class="row mb-4">
-    <div class="col-12">
-      <button class="btn btn-light mb-3" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i> Back to Trips
+<div class="container pb-4" *ngIf="trip">
+
+  <div class="app-topbar">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="flex-grow-1">
+      <h1>{{ trip.name }}</h1>
+      <p class="app-topbar-sub">{{ trip.location }}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="icon-btn" (click)="closeTrip()" *ngIf="trip.status !== 'completed'" title="Close Trip">
+        <i class="bi bi-lock"></i>
       </button>
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h1>{{ trip.name }}</h1>
-          <p class="text-muted">{{ trip.location }}</p>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-primary" (click)="closeTrip()" *ngIf="trip.status !== 'completed'">
-            <i class="bi bi-lock"></i> Close Trip
-          </button>
-          <button class="btn btn-outline-danger" (click)="deleteTrip()">
-            <i class="bi bi-trash"></i> Delete Trip
-          </button>
-        </div>
-      </div>
+      <button class="icon-btn danger" (click)="deleteTrip()" title="Delete Trip">
+        <i class="bi bi-trash"></i>
+      </button>
     </div>
   </div>
 
-  <div class="row mb-4">
-    <div class="col-md-3 mb-3">
-      <div class="card">
-        <div class="card-body">
-          <h6 class="card-title text-muted">Status</h6>
-          <span class="badge" [ngClass]="trip.status === 'ongoing' ? 'bg-success' : trip.status === 'planned' ? 'bg-info' : 'bg-secondary'">
-            {{ trip.status | uppercase }}
-          </span>
-        </div>
-      </div>
+  <div class="stat-scroll">
+    <div class="stat-card">
+      <small>Status</small>
+      <span class="badge" [ngClass]="trip.status === 'ongoing' ? 'bg-success' : trip.status === 'planned' ? 'bg-info' : 'bg-secondary'">
+        {{ trip.status | uppercase }}
+      </span>
     </div>
-    <div class="col-md-3 mb-3">
-      <div class="card">
-        <div class="card-body">
-          <h6 class="card-title text-muted">Duration</h6>
-          <small>{{ trip.startDate }} to {{ trip.endDate }}</small>
-        </div>
-      </div>
+    <div class="stat-card">
+      <small>Duration</small>
+      <h3 class="stat-sm">{{ trip.startDate }} - {{ trip.endDate }}</h3>
     </div>
-    <div class="col-md-3 mb-3">
-      <div class="card">
-        <div class="card-body">
-          <h6 class="card-title text-muted">Total Spent</h6>
-          <h4>{{ getTotalSpent() | currency:'INR':'symbol':'1.2-2' }}</h4>
-        </div>
-      </div>
+    <div class="stat-card">
+      <small>Total Spent</small>
+      <h3>{{ getTotalSpent() | currency:'INR':'symbol':'1.2-2' }}</h3>
     </div>
-    <div class="col-md-3 mb-3" *ngIf="trip.budget">
-      <div class="card">
-        <div class="card-body">
-          <h6 class="card-title text-muted">Remaining Budget</h6>
-          <h4 [ngClass]="getRemainingBudget() < 0 ? 'text-danger' : 'text-success'">
-            {{ getRemainingBudget() | currency:'INR':'symbol':'1.2-2' }}
-          </h4>
-        </div>
-      </div>
+    <div class="stat-card" *ngIf="trip.budget">
+      <small>Remaining Budget</small>
+      <h3 [ngClass]="getRemainingBudget() < 0 ? 'text-danger' : 'text-success'">
+        {{ getRemainingBudget() | currency:'INR':'symbol':'1.2-2' }}
+      </h3>
     </div>
   </div>
 
@@ -160,15 +141,11 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Expenses</h3>
-        <button class="btn btn-success" (click)="toggleExpenseForm()">
-          <i class="bi bi-plus-circle"></i> Add Expense
-        </button>
-      </div>
-    </div>
+  <div class="section-title">
+    <h4>Expenses</h4>
+    <button class="btn btn-sm btn-success app-hide-mobile" (click)="toggleExpenseForm()">
+      <i class="bi bi-plus-circle"></i> Add Expense
+    </button>
   </div>
 
   <div class="row mb-4" *ngIf="showExpenseForm">
@@ -280,7 +257,30 @@
     </div>
   </div>
 
-  <div class="row" *ngIf="expenses.length > 0">
+  <!-- Mobile: expense cards -->
+  <div class="app-list app-hide-desktop mb-4" *ngIf="expenses.length > 0">
+    <div class="app-row" *ngFor="let expense of expenses">
+      <div class="app-row-left" (click)="toggleExpenseForm(expense)">
+        <div class="app-row-icon expense">
+          <i class="bi bi-receipt"></i>
+        </div>
+        <div>
+          <div class="app-row-title">{{ expense.title }}</div>
+          <div class="app-row-sub">{{ expense.category }} &middot; {{ expense.date }}</div>
+          <div class="app-row-sub" *ngIf="expense.paidBy">Paid by {{ expense.paidBy }}</div>
+        </div>
+      </div>
+      <div class="app-row-right">
+        <div class="amount-expense">{{ expense.amount | currency:'INR':'symbol':'1.2-2' }}</div>
+        <button class="row-delete" (click)="deleteExpense(expense.id)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop: expense table -->
+  <div class="row app-hide-mobile" *ngIf="expenses.length > 0">
     <div class="col-12 mb-4">
       <div class="card">
         <div class="table-responsive">
@@ -391,7 +391,11 @@
   </div>
 </div>
 
-<div class="container-fluid my-5" *ngIf="!trip">
+<button class="fab app-hide-desktop" *ngIf="trip && trip.status !== 'completed'" (click)="toggleExpenseForm()">
+  <i class="bi bi-plus-lg"></i>
+</button>
+
+<div class="container pb-4" *ngIf="!trip">
   <div class="alert alert-warning">
     <h5>Trip not found</h5>
     <button class="btn btn-primary btn-sm" (click)="goBack()">Go Back</button>

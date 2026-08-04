@@ -17,9 +17,10 @@ export class TransactionsComponent implements OnInit {
   transactions: Transaction[] = [];
   isEditing = false;
   showValidation = false;
+  showForm = false;
 
   transaction: Transaction = {
-    id: 0,
+    id: '',
     title: '',
     category: '',
     amount: 0,
@@ -63,13 +64,13 @@ export class TransactionsComponent implements OnInit {
 
     } else {
 
-      this.transaction.id = Date.now();
-
       this.service.addTransaction({ ...this.transaction });
 
     }
 
     this.resetForm(form);
+
+    this.showForm = false;
 
   }
 
@@ -81,12 +82,24 @@ export class TransactionsComponent implements OnInit {
 
     this.showValidation = false;
 
+    this.showForm = true;
+
+  }
+
+  toggleForm(): void {
+
+    this.showForm = !this.showForm;
+
+    if (!this.showForm) {
+      this.resetForm();
+    }
+
   }
 
   resetForm(form?: NgForm): void {
 
     this.transaction = {
-      id: 0,
+      id: '',
       title: '',
       category: '',
       amount: 0,
@@ -98,7 +111,7 @@ export class TransactionsComponent implements OnInit {
     this.showValidation = false;
 
     form?.resetForm({
-      id: 0,
+      id: '',
       title: '',
       category: '',
       amount: 0,
@@ -107,7 +120,7 @@ export class TransactionsComponent implements OnInit {
 
   }
 
-  delete(id: number): void {
+  delete(id: string): void {
 
     if (confirm('Delete this expense?')) {
 

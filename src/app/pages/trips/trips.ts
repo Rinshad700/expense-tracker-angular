@@ -32,7 +32,7 @@ export class TripsComponent implements OnInit {
     });
   }
 
-  getTripTotal(tripId: number): number {
+  getTripTotal(tripId: string): number {
     return this.tripExpenseService.getTripExpenseTotal(tripId);
   }
 
@@ -52,11 +52,11 @@ export class TripsComponent implements OnInit {
     this.router.navigate(['/trips/new']);
   }
 
-  viewTrip(id: number) {
+  viewTrip(id: string) {
     this.router.navigate(['/trips', id]);
   }
 
-  deleteTrip(id: number) {
+  deleteTrip(id: string) {
     if (confirm('Are you sure you want to delete this trip?')) {
       this.tripExpenseService.deleteExpensesByTrip(id);
       this.tripService.deleteTrip(id);

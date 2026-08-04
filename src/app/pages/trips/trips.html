@@ -1,135 +1,137 @@
-<div class="container-fluid my-5">
-  <div class="row mb-4">
-    <div class="col-12">
-      <h1 class="mb-3">Trips</h1>
-      <button class="btn btn-primary" (click)="addTrip()">
-        <i class="bi bi-plus-circle"></i> New Trip
-      </button>
+<div class="container pb-4">
+
+  <div class="app-topbar">
+    <div>
+      <h1>Trips</h1>
+      <p class="app-topbar-sub">Plan trips and split expenses with friends.</p>
     </div>
   </div>
 
   <!-- Active Trips -->
-  <div class="row mb-5" *ngIf="activeTrips.length > 0">
-    <div class="col-12">
-      <h3 class="mb-3">Active Trips</h3>
+  <div class="mb-4" *ngIf="activeTrips.length > 0">
+
+    <div class="section-title">
+      <h4>Active Trips</h4>
     </div>
-    <div class="col-md-6 col-lg-4 mb-4" *ngFor="let trip of activeTrips">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div>
-              <h5 class="card-title">{{ trip.name }}</h5>
-              <p class="text-muted small mb-0">{{ trip.location }}</p>
-            </div>
-            <span class="badge" [ngClass]="trip.status === 'ongoing' ? 'bg-success' : 'bg-info'">
-              {{ trip.status | uppercase }}
-            </span>
-          </div>
 
-          <p class="card-text small mb-2">{{ trip.description }}</p>
+    <div class="trip-grid">
 
-          <div class="mb-3">
-            <small class="text-muted">
-              <i class="bi bi-calendar-event"></i>
-              {{ trip.startDate }} to {{ trip.endDate }}
-            </small>
-          </div>
+      <div class="trip-card" *ngFor="let trip of activeTrips" (click)="viewTrip(trip.id)">
 
-          <!-- Budget Progress -->
-          <div *ngIf="trip.budget" class="mb-3">
-            <div class="d-flex justify-content-between mb-2">
-              <small class="text-muted">Budget</small>
-              <small class="fw-bold">
-                {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }} / {{ trip.budget | currency:'INR':'symbol':'1.2-2' }}
-              </small>
-            </div>
-            <div class="progress">
-              <div
-                class="progress-bar"
-                [ngClass]="getBudgetPercentage(trip) > 100 ? 'bg-danger' : 'bg-success'"
-                [style.width.%]="Math.min(getBudgetPercentage(trip), 100)"
-              ></div>
-            </div>
-            <small [ngClass]="getRemainingBudget(trip) < 0 ? 'text-danger' : 'text-success'">
-              {{ getRemainingBudget(trip) >= 0 ? '₹' : '-₹' }}
-              {{ Math.abs(getRemainingBudget(trip)) | number: '1.2-2' }} remaining
-            </small>
+        <div class="trip-card-top">
+          <div>
+            <h5>{{ trip.name }}</h5>
+            <p class="trip-location"><i class="bi bi-geo-alt"></i> {{ trip.location }}</p>
           </div>
-
-          <!-- Budget info if no budget -->
-          <div *ngIf="!trip.budget" class="mb-3">
-            <small class="text-muted">
-              Total Spent: {{ getTripTotal(trip.id) | currency }}
-            </small>
-          </div>
-
-          <div class="d-grid gap-2 d-md-flex">
-            <button class="btn btn-sm btn-outline-primary flex-grow-1" (click)="viewTrip(trip.id)">
-              View
-            </button>
-            <button class="btn btn-sm btn-outline-danger" (click)="deleteTrip(trip.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+          <span class="badge" [ngClass]="trip.status === 'ongoing' ? 'bg-success' : 'bg-info'">
+            {{ trip.status | uppercase }}
+          </span>
         </div>
+
+        <p class="trip-desc">{{ trip.description }}</p>
+
+        <div class="trip-dates">
+          <i class="bi bi-calendar-event"></i>
+          {{ trip.startDate }} to {{ trip.endDate }}
+        </div>
+
+        <div class="trip-budget" *ngIf="trip.budget">
+          <div class="trip-budget-row">
+            <small>Budget</small>
+            <small class="fw-bold">
+              {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }} / {{ trip.budget | currency:'INR':'symbol':'1.2-2' }}
+            </small>
+          </div>
+          <div class="progress">
+            <div
+              class="progress-bar"
+              [ngClass]="getBudgetPercentage(trip) > 100 ? 'bg-danger' : 'bg-success'"
+              [style.width.%]="Math.min(getBudgetPercentage(trip), 100)"
+            ></div>
+          </div>
+          <small [ngClass]="getRemainingBudget(trip) < 0 ? 'text-danger' : 'text-success'">
+            {{ getRemainingBudget(trip) >= 0 ? '₹' : '-₹' }}
+            {{ Math.abs(getRemainingBudget(trip)) | number: '1.2-2' }} remaining
+          </small>
+        </div>
+
+        <div class="trip-budget" *ngIf="!trip.budget">
+          <small class="text-muted">
+            Total Spent: {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }}
+          </small>
+        </div>
+
+        <div class="trip-actions">
+          <button class="btn btn-sm btn-outline-primary flex-grow-1" (click)="$event.stopPropagation(); viewTrip(trip.id)">
+            View
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="$event.stopPropagation(); deleteTrip(trip.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
       </div>
+
     </div>
+
   </div>
 
   <!-- Completed Trips -->
-  <div class="row" *ngIf="completedTrips.length > 0">
-    <div class="col-12">
-      <h3 class="mb-3">Completed Trips</h3>
+  <div *ngIf="completedTrips.length > 0">
+
+    <div class="section-title">
+      <h4>Completed Trips</h4>
     </div>
-    <div class="col-md-6 col-lg-4 mb-4" *ngFor="let trip of completedTrips">
-      <div class="card h-100 shadow-sm opacity-75">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div>
-              <h5 class="card-title">{{ trip.name }}</h5>
-              <p class="text-muted small mb-0">{{ trip.location }}</p>
-            </div>
-            <span class="badge bg-secondary">COMPLETED</span>
-          </div>
 
-          <p class="card-text small mb-2">{{ trip.description }}</p>
+    <div class="trip-grid">
 
-          <div class="mb-3">
-            <small class="text-muted">
-              <i class="bi bi-calendar-event"></i>
-              {{ trip.startDate }} to {{ trip.endDate }}
-            </small>
-          </div>
+      <div class="trip-card completed" *ngFor="let trip of completedTrips" (click)="viewTrip(trip.id)">
 
-          <div class="mb-3">
-            <small class="text-muted">
-              Total Spent: {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }}
-            </small>
+        <div class="trip-card-top">
+          <div>
+            <h5>{{ trip.name }}</h5>
+            <p class="trip-location"><i class="bi bi-geo-alt"></i> {{ trip.location }}</p>
           </div>
-
-          <div class="d-grid gap-2 d-md-flex">
-            <button class="btn btn-sm btn-outline-primary flex-grow-1" (click)="viewTrip(trip.id)">
-              View
-            </button>
-            <button class="btn btn-sm btn-outline-danger" (click)="deleteTrip(trip.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+          <span class="badge bg-secondary">COMPLETED</span>
         </div>
+
+        <p class="trip-desc">{{ trip.description }}</p>
+
+        <div class="trip-dates">
+          <i class="bi bi-calendar-event"></i>
+          {{ trip.startDate }} to {{ trip.endDate }}
+        </div>
+
+        <div class="trip-budget">
+          <small class="text-muted">
+            Total Spent: {{ getTripTotal(trip.id) | currency:'INR':'symbol':'1.2-2' }}
+          </small>
+        </div>
+
+        <div class="trip-actions">
+          <button class="btn btn-sm btn-outline-primary flex-grow-1" (click)="$event.stopPropagation(); viewTrip(trip.id)">
+            View
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="$event.stopPropagation(); deleteTrip(trip.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
       </div>
+
     </div>
+
   </div>
 
   <!-- Empty State -->
-  <div class="row" *ngIf="trips.length === 0">
-    <div class="col-12">
-      <div class="alert alert-info text-center">
-        <h5>No trips yet</h5>
-        <p class="mb-0">Start planning your first trip!</p>
-        <button class="btn btn-primary btn-sm mt-3" (click)="addTrip()">
-          <i class="bi bi-plus-circle"></i> Create Trip
-        </button>
-      </div>
-    </div>
+  <div class="empty-state" *ngIf="trips.length === 0">
+    <i class="bi bi-map"></i>
+    <h4>No trips yet</h4>
+    <p>Tap the + button to plan your first trip.</p>
   </div>
+
 </div>
+
+<button class="fab" (click)="addTrip()">
+  <i class="bi bi-plus-lg"></i>
+</button>

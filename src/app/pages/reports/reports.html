@@ -1,153 +1,94 @@
-<div class="container py-4">
+<div class="container pb-4">
 
-<div class="report-hero">
+<div class="app-topbar">
+    <div>
+        <h1>Reports</h1>
+        <p class="app-topbar-sub">Track and analyse your spending.</p>
+    </div>
+</div>
 
-<div>
+<div class="stat-scroll">
 
-<span class="hero-tag">Expense Analytics</span>
+    <div class="stat-card">
+        <small>Total Expense</small>
+        <h3 class="text-danger">₹ {{ totalExpense | number:'1.0-2' }}</h3>
+    </div>
 
-<h2>📊 Expense Reports</h2>
+    <div class="stat-card">
+        <small>Today's Expense</small>
+        <h3 class="text-primary">₹ {{ todayExpense | number:'1.0-2' }}</h3>
+    </div>
 
-<p>Track and analyse your spending.</p>
+    <div class="stat-card">
+        <small>This Month</small>
+        <h3 class="text-success">₹ {{ currentMonthExpense | number:'1.0-2' }}</h3>
+    </div>
 
 </div>
 
-<div class="hero-icon">
+<div class="row g-4">
 
-<i class="bi bi-bar-chart-fill"></i>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header">Monthly Expenses</div>
+            <div class="card-body">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-</div>
-
-</div>
-
-<div class="row g-4 mt-4">
-
-<div class="col-md-4">
-
-<div class="stats-card red">
-
-<small>Total Expense</small>
-
-<h2>₹ {{ totalExpense }}</h2>
-
-</div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="stats-card blue">
-
-<small>Today's Expense</small>
-
-<h2>₹ {{ todayExpense }}</h2>
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">Expense Categories</div>
+            <div class="card-body">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
 
 </div>
 
+<div class="section-title mt-4">
+    <h4>Top Spending Categories</h4>
 </div>
 
-<div class="col-md-4">
+<div class="app-list app-hide-desktop" *ngIf="topCategories.length > 0">
 
-<div class="stats-card green">
-
-<small>This Month</small>
-
-<h2>₹ {{ currentMonthExpense }}</h2>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="row mt-4 g-4">
-
-<div class="col-lg-8">
-
-<div class="card">
-
-<div class="card-header">
-
-Monthly Expenses
+    <div class="app-row" *ngFor="let c of topCategories">
+        <div class="app-row-left">
+            <div class="app-row-icon expense">
+                <i class="bi bi-tag"></i>
+            </div>
+            <div class="app-row-title">{{ c.category }}</div>
+        </div>
+        <div class="amount-expense">₹ {{ c.amount | number:'1.0-2' }}</div>
+    </div>
 
 </div>
 
-<div class="card-body">
-
-<canvas id="barChart"></canvas>
-
+<div class="card app-hide-mobile" *ngIf="topCategories.length > 0">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let c of topCategories">
+                    <td>{{ c.category }}</td>
+                    <td class="text-end">₹ {{ c.amount | number:'1.0-2' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-</div>
-
-</div>
-
-<div class="col-lg-4">
-
-<div class="card">
-
-<div class="card-header">
-
-Expense Categories
-
-</div>
-
-<div class="card-body">
-
-<canvas id="pieChart"></canvas>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="card mt-4">
-
-<div class="card-header">
-
-Top Spending Categories
-
-</div>
-
-<div class="card-body">
-
-<table class="table">
-
-<thead>
-
-<tr>
-
-<th>Category</th>
-
-<th class="text-end">Amount</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr *ngFor="let c of topCategories">
-
-<td>{{ c.category }}</td>
-
-<td class="text-end">
-
-₹ {{ c.amount }}
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
+<div class="empty-state" *ngIf="topCategories.length === 0">
+    <i class="bi bi-bar-chart"></i>
+    <h4>No Data Yet</h4>
+    <p>Add expenses to see your spending breakdown.</p>
 </div>
 
 </div>

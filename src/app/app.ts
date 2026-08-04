@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
 import { NavbarComponent } from './components/navbar/navbar';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
+    CommonModule,
     RouterOutlet,
     NavbarComponent
   ],
@@ -14,5 +17,7 @@ import { NavbarComponent } from './components/navbar/navbar';
   styleUrl: './app.css'
 })
 export class App {
+
+  constructor(public authService: AuthService) {}
 
 }
