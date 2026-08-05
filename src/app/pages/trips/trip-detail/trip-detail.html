@@ -391,7 +391,7 @@
   </div>
 </div>
 
-<button class="fab app-hide-desktop" *ngIf="trip && trip.status !== 'completed'" (click)="toggleExpenseForm()">
+<button class="fab app-hide-desktop" *ngIf="trip" (click)="toggleExpenseForm()">
   <i class="bi bi-plus-lg"></i>
 </button>
 

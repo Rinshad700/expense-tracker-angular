@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import {
   addDoc,
@@ -25,7 +25,10 @@ export class TransactionService {
 
   private unsubscribeSnapshot: (() => void) | null = null;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private ngZone: NgZone
+  ) {
 
     this.authService.user$.subscribe(user => {
 
@@ -42,9 +45,12 @@ export class TransactionService {
         orderBy('date', 'desc')
       );
 
+      // Firestore's realtime channel isn't reliably zone.js-patched, so push the
+      // resulting update back into Angular's zone or the view just won't repaint
+      // until something unrelated (like a route change) forces a tick.
       this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
         const transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Transaction));
-        this.transactionsSubject.next(transactions);
+        this.ngZone.run(() => this.transactionsSubject.next(transactions));
       });
 
     });

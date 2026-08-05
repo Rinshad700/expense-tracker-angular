@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import {
   addDoc,
@@ -25,7 +25,10 @@ export class TripService {
 
   private unsubscribeSnapshot: (() => void) | null = null;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private ngZone: NgZone
+  ) {
 
     this.authService.user$.subscribe(user => {
 
@@ -44,7 +47,7 @@ export class TripService {
 
       this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
         const trips = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Trip));
-        this.tripsSubject.next(trips);
+        this.ngZone.run(() => this.tripsSubject.next(trips));
       });
 
     });
