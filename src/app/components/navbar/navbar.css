@@ -140,6 +140,10 @@
 
     box-shadow:0 -4px 16px rgba(15,23,42,.05);
 
+    transform:translateZ(0);
+
+    will-change:transform;
+
 }
 
 .tab-item{
