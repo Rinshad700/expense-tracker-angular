@@ -427,6 +427,26 @@ a:hover{
     font-size:.85rem;
 }
 
+/* Shared loading state (mirrors .empty-state) */
+.loading-state{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:3rem 1.5rem;
+    text-align:center;
+}
+
+.loading-state .spinner-border{
+    width:2rem;
+    height:2rem;
+}
+
+.loading-state p{
+    margin-top:1rem;
+    color:var(--text-light);
+    font-size:.85rem;
+}
+
 /* Bottom sheet (mobile form modal) */
 .sheet-overlay{
     position:fixed;

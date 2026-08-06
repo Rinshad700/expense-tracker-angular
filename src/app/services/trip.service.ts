@@ -23,6 +23,12 @@ export class TripService {
   private tripsSubject = new BehaviorSubject<Trip[]>([]);
   trips$ = this.tripsSubject.asObservable();
 
+  // True while a freshly-attached listener hasn't received its first snapshot yet
+  // (e.g. right after logging in) — lets pages show a spinner instead of a
+  // misleading "no trips" state during that first round trip to Firestore.
+  private loadingSubject = new BehaviorSubject<boolean>(true);
+  loading$ = this.loadingSubject.asObservable();
+
   private unsubscribeSnapshot: (() => void) | null = null;
 
   constructor(
@@ -37,8 +43,11 @@ export class TripService {
 
       if (!user) {
         this.tripsSubject.next([]);
+        this.loadingSubject.next(false);
         return;
       }
+
+      this.loadingSubject.next(true);
 
       const q = query(
         collection(db, 'users', user.uid, 'trips'),
@@ -47,7 +56,10 @@ export class TripService {
 
       this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
         const trips = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Trip));
-        this.ngZone.run(() => this.tripsSubject.next(trips));
+        this.ngZone.run(() => {
+          this.tripsSubject.next(trips);
+          this.loadingSubject.next(false);
+        });
       });
 
     });

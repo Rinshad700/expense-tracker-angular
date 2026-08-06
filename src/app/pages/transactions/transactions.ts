@@ -18,6 +18,7 @@ export class TransactionsComponent implements OnInit {
   isEditing = false;
   showValidation = false;
   showForm = false;
+  loading = true;
 
   transaction: Transaction = {
     id: '',
@@ -47,6 +48,9 @@ export class TransactionsComponent implements OnInit {
 
     this.service.transactions$
       .subscribe(data => this.transactions = data);
+
+    this.service.loading$
+      .subscribe(loading => this.loading = loading);
 
   }
 

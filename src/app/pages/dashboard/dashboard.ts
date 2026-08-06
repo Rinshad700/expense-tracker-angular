@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit {
   currentDate = new Date();
 
   recentTransactions: Transaction[] = [];
+  loading = true;
 
   constructor(
     private transactionService: TransactionService
@@ -35,6 +36,9 @@ export class DashboardComponent implements OnInit {
         this.calculateSummary();
 
       });
+
+    this.transactionService.loading$
+      .subscribe(loading => this.loading = loading);
 
   }
 

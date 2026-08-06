@@ -123,8 +123,14 @@
 
   </div>
 
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading && trips.length === 0">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p>Loading your trips...</p>
+  </div>
+
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="trips.length === 0">
+  <div class="empty-state" *ngIf="!loading && trips.length === 0">
     <i class="bi bi-map"></i>
     <h4>No trips yet</h4>
     <p>Tap the + button to plan your first trip.</p>

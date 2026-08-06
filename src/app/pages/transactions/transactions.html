@@ -97,7 +97,12 @@
 
     </div>
 
-    <div *ngIf="transactions.length === 0" class="empty-state">
+    <div class="loading-state" *ngIf="loading && transactions.length === 0">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p>Loading your expenses...</p>
+    </div>
+
+    <div *ngIf="!loading && transactions.length === 0" class="empty-state">
 
         <i class="bi bi-wallet2"></i>
         <h4>No Expenses Found</h4>

@@ -74,8 +74,13 @@
 
         </div>
 
+        <div class="loading-state" *ngIf="loading && recentTransactions.length === 0">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Loading your expenses...</p>
+        </div>
+
         <div
-            *ngIf="recentTransactions.length === 0"
+            *ngIf="!loading && recentTransactions.length === 0"
             class="empty-state">
 
             <i class="bi bi-wallet2"></i>

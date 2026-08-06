@@ -16,6 +16,7 @@ export class TripsComponent implements OnInit {
   trips: Trip[] = [];
   activeTrips: Trip[] = [];
   completedTrips: Trip[] = [];
+  loading = true;
   Math = Math;
 
   constructor(
@@ -30,6 +31,8 @@ export class TripsComponent implements OnInit {
       this.activeTrips = trips.filter(t => t.status === 'ongoing' || t.status === 'planned');
       this.completedTrips = trips.filter(t => t.status === 'completed');
     });
+
+    this.tripService.loading$.subscribe(loading => this.loading = loading);
   }
 
   getTripTotal(tripId: string): number {

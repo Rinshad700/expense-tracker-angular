@@ -23,6 +23,12 @@ export class TransactionService {
   private transactionsSubject = new BehaviorSubject<Transaction[]>([]);
   transactions$ = this.transactionsSubject.asObservable();
 
+  // True while a freshly-attached listener hasn't received its first snapshot yet
+  // (e.g. right after logging in) — lets pages show a spinner instead of a
+  // misleading "no data" state during that first round trip to Firestore.
+  private loadingSubject = new BehaviorSubject<boolean>(true);
+  loading$ = this.loadingSubject.asObservable();
+
   private unsubscribeSnapshot: (() => void) | null = null;
 
   constructor(
@@ -37,8 +43,11 @@ export class TransactionService {
 
       if (!user) {
         this.transactionsSubject.next([]);
+        this.loadingSubject.next(false);
         return;
       }
+
+      this.loadingSubject.next(true);
 
       const q = query(
         collection(db, 'users', user.uid, 'transactions'),
@@ -50,7 +59,10 @@ export class TransactionService {
       // until something unrelated (like a route change) forces a tick.
       this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
         const transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Transaction));
-        this.ngZone.run(() => this.transactionsSubject.next(transactions));
+        this.ngZone.run(() => {
+          this.transactionsSubject.next(transactions);
+          this.loadingSubject.next(false);
+        });
       });
 
     });
