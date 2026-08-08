@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { filter, firstValueFrom } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
 
@@ -45,6 +46,12 @@ export class LoginComponent {
       } else {
         await this.authService.signIn(this.email, this.password);
       }
+
+      // signIn()/signUp() resolving doesn't guarantee the auth signal has
+      // already updated — onAuthStateChanged can fire a moment later. Wait
+      // for it explicitly, or the authGuard on '/' can still see the old
+      // "logged out" state and bounce straight back to /login.
+      await firstValueFrom(this.authService.user$.pipe(filter(user => !!user)));
 
       this.router.navigate(['/']);
 

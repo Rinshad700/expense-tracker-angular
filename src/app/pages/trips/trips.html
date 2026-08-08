@@ -8,7 +8,7 @@
   </div>
 
   <!-- Active Trips -->
-  <div class="mb-4" *ngIf="activeTrips.length > 0">
+  <div class="mb-4" *ngIf="activeTrips().length > 0">
 
     <div class="section-title">
       <h4>Active Trips</h4>
@@ -16,7 +16,7 @@
 
     <div class="trip-grid">
 
-      <div class="trip-card" *ngFor="let trip of activeTrips" (click)="viewTrip(trip.id)">
+      <div class="trip-card" *ngFor="let trip of activeTrips()" (click)="viewTrip(trip.id)">
 
         <div class="trip-card-top">
           <div>
@@ -77,7 +77,7 @@
   </div>
 
   <!-- Completed Trips -->
-  <div *ngIf="completedTrips.length > 0">
+  <div *ngIf="completedTrips().length > 0">
 
     <div class="section-title">
       <h4>Completed Trips</h4>
@@ -85,7 +85,7 @@
 
     <div class="trip-grid">
 
-      <div class="trip-card completed" *ngFor="let trip of completedTrips" (click)="viewTrip(trip.id)">
+      <div class="trip-card completed" *ngFor="let trip of completedTrips()" (click)="viewTrip(trip.id)">
 
         <div class="trip-card-top">
           <div>
@@ -124,13 +124,13 @@
   </div>
 
   <!-- Loading State -->
-  <div class="loading-state" *ngIf="loading && trips.length === 0">
+  <div class="loading-state" *ngIf="loading() && trips().length === 0">
     <div class="spinner-border text-primary" role="status"></div>
     <p>Loading your trips...</p>
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="!loading && trips.length === 0">
+  <div class="empty-state" *ngIf="!loading() && trips().length === 0">
     <i class="bi bi-map"></i>
     <h4>No trips yet</h4>
     <p>Tap the + button to plan your first trip.</p>

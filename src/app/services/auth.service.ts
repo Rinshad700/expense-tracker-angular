@@ -1,5 +1,6 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 import {
   User,
   createUserWithEmailAndPassword,
@@ -10,26 +11,32 @@ import {
 
 import { auth } from '../firebase';
 
+// undefined = Firebase hasn't finished checking for a saved session yet;
+// null = confirmed signed out; User = confirmed signed in. Collapsing the
+// first two into a single "null" default made guards resolve "logged out"
+// before Firebase had actually answered, occasionally landing a still-valid
+// session on the login page.
+export type AuthUser = User | null | undefined;
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  user$: Observable<User | null>;
+  // Signals hook directly into Angular's own zoneless change-detection
+  // scheduler, unlike a manual ApplicationRef.tick() call from a raw Firebase
+  // callback — which can race Angular's own scheduled tick and throw NG0100.
+  // toObservable() exposes this as a normal Observable so existing
+  // .subscribe()-based code elsewhere doesn't need to change.
+  private userSignal = signal<AuthUser>(undefined);
+  user$: Observable<AuthUser> = toObservable(this.userSignal);
 
-  constructor(private ngZone: NgZone) {
-
-    // onAuthStateChanged fires outside Angular's zone (the Firebase SDK isn't
-    // zone.js-aware), so without ngZone.run() the UI wouldn't repaint until some
-    // unrelated zone-patched event (like a route change) forced a tick.
-    this.user$ = new Observable<User | null>(subscriber => {
-      return onAuthStateChanged(
-        auth,
-        user => this.ngZone.run(() => subscriber.next(user)),
-        err => this.ngZone.run(() => subscriber.error(err))
-      );
-    }).pipe(shareReplay({ bufferSize: 1, refCount: false }));
-
+  constructor() {
+    onAuthStateChanged(
+      auth,
+      user => this.userSignal.set(user),
+      () => this.userSignal.set(null)
+    );
   }
 
   get currentUid(): string | null {

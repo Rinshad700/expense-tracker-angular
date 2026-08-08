@@ -1,5 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
   addDoc,
   collection,
@@ -20,62 +20,80 @@ import { AuthService } from './auth.service';
 })
 export class TripService {
 
-  private tripsSubject = new BehaviorSubject<Trip[]>([]);
-  trips$ = this.tripsSubject.asObservable();
+  // Signals hook directly into Angular's own zoneless change-detection
+  // scheduler, so updates from a raw Firestore callback (which Angular can't
+  // otherwise see) repaint the view safely — no manual ApplicationRef.tick()
+  // needed, and no risk of it racing Angular's own scheduled ticks.
+  private tripsSignal = signal<Trip[]>([]);
+  // Prefer reading this signal directly in templates — Angular tracks that
+  // natively and coalesces updates safely. trips$ stays around only for
+  // places (like TripDetailComponent) still consuming it as a stream.
+  trips = this.tripsSignal.asReadonly();
+  trips$ = toObservable(this.tripsSignal);
 
   // True while a freshly-attached listener hasn't received its first snapshot yet
   // (e.g. right after logging in) — lets pages show a spinner instead of a
   // misleading "no trips" state during that first round trip to Firestore.
-  private loadingSubject = new BehaviorSubject<boolean>(true);
-  loading$ = this.loadingSubject.asObservable();
+  private loadingSignal = signal<boolean>(true);
+  loading = this.loadingSignal.asReadonly();
+  loading$ = toObservable(this.loadingSignal);
 
   private unsubscribeSnapshot: (() => void) | null = null;
 
-  constructor(
-    private authService: AuthService,
-    private ngZone: NgZone
-  ) {
+  constructor(private authService: AuthService) {
 
     this.authService.user$.subscribe(user => {
+
+      // undefined means Firebase hasn't finished checking for a saved
+      // session yet — treating that the same as "logged out" would clear
+      // data/flip loading off for a moment before the real answer arrives.
+      if (user === undefined) {
+        return;
+      }
 
       this.unsubscribeSnapshot?.();
       this.unsubscribeSnapshot = null;
 
       if (!user) {
-        this.tripsSubject.next([]);
-        this.loadingSubject.next(false);
+        this.tripsSignal.set([]);
+        this.loadingSignal.set(false);
         return;
       }
 
-      this.loadingSubject.next(true);
+      this.loadingSignal.set(true);
 
       const q = query(
         collection(db, 'users', user.uid, 'trips'),
         orderBy('createdAt', 'desc')
       );
 
-      this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
-        const trips = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Trip));
-        this.ngZone.run(() => {
-          this.tripsSubject.next(trips);
-          this.loadingSubject.next(false);
-        });
-      });
+      this.unsubscribeSnapshot = onSnapshot(
+        q,
+        snapshot => {
+          const trips = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Trip));
+          this.tripsSignal.set(trips);
+          this.loadingSignal.set(false);
+        },
+        error => {
+          console.error('Trips listener failed', error);
+          this.loadingSignal.set(false);
+        }
+      );
 
     });
 
   }
 
   getTrips(): Trip[] {
-    return this.tripsSubject.value;
+    return this.tripsSignal();
   }
 
   getTrip(id: string): Trip | undefined {
-    return this.tripsSubject.value.find(t => t.id === id);
+    return this.tripsSignal().find(t => t.id === id);
   }
 
   getActiveTrips(): Trip[] {
-    return this.tripsSubject.value.filter(t => t.status === 'ongoing' || t.status === 'planned');
+    return this.tripsSignal().filter(t => t.status === 'ongoing' || t.status === 'planned');
   }
 
   addTrip(trip: Omit<Trip, 'id' | 'createdAt'>) {

@@ -8,88 +8,95 @@
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="stat-scroll">
-
-        <div class="stat-card">
-            <div class="stat-icon expense">
-                <i class="bi bi-calendar-month"></i>
-            </div>
-            <small>{{ currentDate | date:'MMMM yyyy' }}</small>
-            <h3>₹ {{ currentMonthExpense | number:'1.0-2' }}</h3>
-            <p>This Month</p>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon today">
-                <i class="bi bi-calendar-day"></i>
-            </div>
-            <small>{{ currentDate | date:'dd MMM yyyy' }}</small>
-            <h3>₹ {{ todayExpense | number:'1.0-2' }}</h3>
-            <p>Today</p>
-        </div>
-
+    <div class="loading-state" *ngIf="loading()">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p>Loading your expenses... ({{ loadingSeconds() }}s)</p>
+        <p *ngIf="loadingSeconds() >= 8" class="text-muted">
+            Still connecting — this can take a moment right after signing in.
+        </p>
     </div>
 
-    <!-- Recent Expenses -->
-    <div class="mt-4">
+    <ng-container *ngIf="!loading()">
 
-        <div class="section-title">
+        <!-- Summary Cards -->
+        <div class="stat-scroll">
 
-            <h4>
-                <i class="bi bi-clock-history me-2 text-primary"></i>
-                Recent Expenses
-            </h4>
+            <div class="stat-card">
+                <div class="stat-icon expense">
+                    <i class="bi bi-calendar-month"></i>
+                </div>
+                <small>{{ currentDate | date:'MMMM yyyy' }}</small>
+                <h3>₹ {{ currentMonthExpense() | number:'1.0-2' }}</h3>
+                <p>This Month</p>
+            </div>
 
-            <span class="text-muted">
-                {{ recentTransactions.length }} Expense(s)
-            </span>
+            <div class="stat-card">
+                <div class="stat-icon today">
+                    <i class="bi bi-calendar-day"></i>
+                </div>
+                <small>{{ currentDate | date:'dd MMM yyyy' }}</small>
+                <h3>₹ {{ todayExpense() | number:'1.0-2' }}</h3>
+                <p>Today</p>
+            </div>
 
         </div>
 
-        <div class="app-list" *ngIf="recentTransactions.length > 0">
+        <!-- Recent Expenses -->
+        <div class="mt-4">
+
+            <div class="section-title">
+
+                <h4>
+                    <i class="bi bi-clock-history me-2 text-primary"></i>
+                    Recent Expenses
+                </h4>
+
+                <span class="text-muted">
+                    {{ recentTransactions().length }} Expense(s)
+                </span>
+
+            </div>
+
+            <div class="app-list" *ngIf="recentTransactions().length > 0">
+
+                <div
+                    class="app-row"
+                    *ngFor="let transaction of recentTransactions()">
+
+                    <div class="app-row-left">
+
+                        <div class="app-row-icon expense">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+
+                        <div>
+                            <div class="app-row-title">{{ transaction.title }}</div>
+                            <div class="app-row-sub">{{ transaction.category }} &middot; {{ transaction.date | date:'dd MMM' }}</div>
+                        </div>
+
+                    </div>
+
+                    <div class="app-row-right">
+                        <div class="amount-expense">₹ {{ transaction.amount | number:'1.0-2' }}</div>
+                    </div>
+
+                </div>
+
+            </div>
 
             <div
-                class="app-row"
-                *ngFor="let transaction of recentTransactions">
+                *ngIf="recentTransactions().length === 0"
+                class="empty-state">
 
-                <div class="app-row-left">
-
-                    <div class="app-row-icon expense">
-                        <i class="bi bi-wallet2"></i>
-                    </div>
-
-                    <div>
-                        <div class="app-row-title">{{ transaction.title }}</div>
-                        <div class="app-row-sub">{{ transaction.category }} &middot; {{ transaction.date | date:'dd MMM' }}</div>
-                    </div>
-
-                </div>
-
-                <div class="app-row-right">
-                    <div class="amount-expense">₹ {{ transaction.amount | number:'1.0-2' }}</div>
-                </div>
+                <i class="bi bi-wallet2"></i>
+                <h4>No Expenses Found</h4>
+                <p>Add your first expense to get started.</p>
 
             </div>
 
         </div>
 
-        <div class="loading-state" *ngIf="loading && recentTransactions.length === 0">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p>Loading your expenses...</p>
-        </div>
-
-        <div
-            *ngIf="!loading && recentTransactions.length === 0"
-            class="empty-state">
-
-            <i class="bi bi-wallet2"></i>
-            <h4>No Expenses Found</h4>
-            <p>Add your first expense to get started.</p>
-
-        </div>
-
-    </div>
+    </ng-container>
 
 </div>
 

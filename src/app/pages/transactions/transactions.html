@@ -10,9 +10,9 @@
 
     <!-- Expense History -->
 
-    <div class="app-list app-hide-desktop" *ngIf="transactions.length > 0">
+    <div class="app-list app-hide-desktop" *ngIf="transactions().length > 0">
 
-        <div class="app-row" *ngFor="let t of transactions">
+        <div class="app-row" *ngFor="let t of transactions()">
 
             <div class="app-row-left" (click)="edit(t)">
 
@@ -38,7 +38,7 @@
 
     </div>
 
-    <div class="card app-hide-mobile" *ngIf="transactions.length > 0">
+    <div class="card app-hide-mobile" *ngIf="transactions().length > 0">
 
         <div class="card-header fw-semibold">
             Expense History
@@ -65,7 +65,7 @@
 
                 <tbody>
 
-                    <tr *ngFor="let t of transactions">
+                    <tr *ngFor="let t of transactions()">
 
                         <td>
                             <button class="btn btn-link text-primary p-0" (click)="edit(t)">
@@ -97,12 +97,12 @@
 
     </div>
 
-    <div class="loading-state" *ngIf="loading && transactions.length === 0">
+    <div class="loading-state" *ngIf="loading() && transactions().length === 0">
         <div class="spinner-border text-primary" role="status"></div>
         <p>Loading your expenses...</p>
     </div>
 
-    <div *ngIf="!loading && transactions.length === 0" class="empty-state">
+    <div *ngIf="!loading() && transactions().length === 0" class="empty-state">
 
         <i class="bi bi-wallet2"></i>
         <h4>No Expenses Found</h4>

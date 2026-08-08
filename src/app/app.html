@@ -1,6 +1,6 @@
-<app-navbar *ngIf="authService.user$ | async"></app-navbar>
+<app-navbar *ngIf="showNav(authService.user$ | async)"></app-navbar>
 
-<div class="main-content" [class.with-nav]="authService.user$ | async">
+<div class="main-content" [class.with-nav]="showNav(authService.user$ | async)">
 
 <router-outlet></router-outlet>
 

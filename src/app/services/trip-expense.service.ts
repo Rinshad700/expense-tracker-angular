@@ -1,5 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
   addDoc,
   collection,
@@ -22,62 +22,79 @@ import { AuthService } from './auth.service';
 })
 export class TripExpenseService {
 
-  private expensesSubject = new BehaviorSubject<TripExpense[]>([]);
-  expenses$ = this.expensesSubject.asObservable();
+  // Signals hook directly into Angular's own zoneless change-detection
+  // scheduler, so updates from a raw Firestore callback (which Angular can't
+  // otherwise see) repaint the view safely — no manual ApplicationRef.tick()
+  // needed, and no risk of it racing Angular's own scheduled ticks.
+  private expensesSignal = signal<TripExpense[]>([]);
+  // Prefer reading this signal directly in templates — Angular tracks that
+  // natively and coalesces updates safely. expenses$ stays around only for
+  // places still consuming it as a stream.
+  expenses = this.expensesSignal.asReadonly();
+  expenses$ = toObservable(this.expensesSignal);
 
   // True while a freshly-attached listener hasn't received its first snapshot yet
   // (e.g. right after logging in) — lets pages show a spinner instead of a
   // misleading "no expenses" state during that first round trip to Firestore.
-  private loadingSubject = new BehaviorSubject<boolean>(true);
-  loading$ = this.loadingSubject.asObservable();
+  private loadingSignal = signal<boolean>(true);
+  loading$ = toObservable(this.loadingSignal);
 
   private unsubscribeSnapshot: (() => void) | null = null;
 
-  constructor(
-    private authService: AuthService,
-    private ngZone: NgZone
-  ) {
+  constructor(private authService: AuthService) {
 
     this.authService.user$.subscribe(user => {
+
+      // undefined means Firebase hasn't finished checking for a saved
+      // session yet — treating that the same as "logged out" would clear
+      // data/flip loading off for a moment before the real answer arrives.
+      if (user === undefined) {
+        return;
+      }
 
       this.unsubscribeSnapshot?.();
       this.unsubscribeSnapshot = null;
 
       if (!user) {
-        this.expensesSubject.next([]);
-        this.loadingSubject.next(false);
+        this.expensesSignal.set([]);
+        this.loadingSignal.set(false);
         return;
       }
 
-      this.loadingSubject.next(true);
+      this.loadingSignal.set(true);
 
       const q = query(
         collection(db, 'users', user.uid, 'tripExpenses'),
         orderBy('date', 'desc')
       );
 
-      this.unsubscribeSnapshot = onSnapshot(q, snapshot => {
-        const expenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TripExpense));
-        this.ngZone.run(() => {
-          this.expensesSubject.next(expenses);
-          this.loadingSubject.next(false);
-        });
-      });
+      this.unsubscribeSnapshot = onSnapshot(
+        q,
+        snapshot => {
+          const expenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TripExpense));
+          this.expensesSignal.set(expenses);
+          this.loadingSignal.set(false);
+        },
+        error => {
+          console.error('Trip expenses listener failed', error);
+          this.loadingSignal.set(false);
+        }
+      );
 
     });
 
   }
 
   getExpenses(): TripExpense[] {
-    return this.expensesSubject.value;
+    return this.expensesSignal();
   }
 
   getExpensesByTrip(tripId: string): TripExpense[] {
-    return this.expensesSubject.value.filter(e => e.tripId === tripId);
+    return this.expensesSignal().filter(e => e.tripId === tripId);
   }
 
   getExpense(id: string): TripExpense | undefined {
-    return this.expensesSubject.value.find(e => e.id === id);
+    return this.expensesSignal().find(e => e.id === id);
   }
 
   getTripExpenseTotal(tripId: string): number {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TripService } from '../../services/trip.service';
@@ -12,28 +12,22 @@ import { Trip } from '../../models/trip';
   templateUrl: './trips.html',
   styleUrls: ['./trips.css']
 })
-export class TripsComponent implements OnInit {
-  trips: Trip[] = [];
-  activeTrips: Trip[] = [];
-  completedTrips: Trip[] = [];
-  loading = true;
+export class TripsComponent {
+
+  private tripService = inject(TripService);
+  private tripExpenseService = inject(TripExpenseService);
+  private router = inject(Router);
+
   Math = Math;
 
-  constructor(
-    private tripService: TripService,
-    private tripExpenseService: TripExpenseService,
-    private router: Router
-  ) {}
+  // Reading the service's signals directly (rather than copying into plain
+  // fields via .subscribe()) is what lets Angular's zoneless change
+  // detection track and safely coalesce these updates on its own.
+  trips = this.tripService.trips;
+  loading = this.tripService.loading;
 
-  ngOnInit() {
-    this.tripService.trips$.subscribe(trips => {
-      this.trips = trips;
-      this.activeTrips = trips.filter(t => t.status === 'ongoing' || t.status === 'planned');
-      this.completedTrips = trips.filter(t => t.status === 'completed');
-    });
-
-    this.tripService.loading$.subscribe(loading => this.loading = loading);
-  }
+  activeTrips = computed(() => this.trips().filter(t => t.status === 'ongoing' || t.status === 'planned'));
+  completedTrips = computed(() => this.trips().filter(t => t.status === 'completed'));
 
   getTripTotal(tripId: string): number {
     return this.tripExpenseService.getTripExpenseTotal(tripId);

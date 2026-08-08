@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 
@@ -12,13 +12,19 @@ import { TransactionService } from '../../services/transaction.service';
   templateUrl: './transactions.html',
   styleUrl: './transactions.css'
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent {
 
-  transactions: Transaction[] = [];
+  private service = inject(TransactionService);
+
+  // Reading the service's signals directly (rather than copying into plain
+  // fields via .subscribe()) is what lets Angular's zoneless change
+  // detection track and safely coalesce these updates on its own.
+  transactions = this.service.transactions;
+  loading = this.service.loading;
+
   isEditing = false;
   showValidation = false;
   showForm = false;
-  loading = true;
 
   transaction: Transaction = {
     id: '',
@@ -41,18 +47,6 @@ export class TransactionsComponent implements OnInit {
     'Travel',
     'Other'
   ];
-
-  constructor(private service: TransactionService) {}
-
-  ngOnInit(): void {
-
-    this.service.transactions$
-      .subscribe(data => this.transactions = data);
-
-    this.service.loading$
-      .subscribe(loading => this.loading = loading);
-
-  }
 
   save(form: NgForm): void {
 

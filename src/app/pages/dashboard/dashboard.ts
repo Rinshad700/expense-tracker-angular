@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { Transaction } from '../../models/transaction';
 import { TransactionService } from '../../services/transaction.service';
 
 @Component({
@@ -12,76 +11,71 @@ import { TransactionService } from '../../services/transaction.service';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnDestroy {
 
-  transactions: Transaction[] = [];
-  todayExpense = 0;
-  currentMonthExpense = 0;
+  private transactionService = inject(TransactionService);
+
   currentDate = new Date();
 
-  recentTransactions: Transaction[] = [];
-  loading = true;
+  // Reading the service's signals directly (rather than copying into plain
+  // fields via .subscribe()) is what lets Angular's zoneless change
+  // detection track and safely coalesce these updates on its own.
+  transactions = this.transactionService.transactions;
+  loading = this.transactionService.loading;
 
-  constructor(
-    private transactionService: TransactionService
-  ) { }
+  recentTransactions = computed(() =>
+    [...this.transactions()]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5)
+  );
 
-  ngOnInit(): void {
+  currentMonthExpense = computed(() => {
+    const today = new Date();
+    return this.transactions()
+      .filter(t => {
+        const date = new Date(t.date);
+        return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+      })
+      .reduce((sum, t) => sum + t.amount, 0);
+  });
 
-    this.transactionService.transactions$
-      .subscribe(data => {
+  todayExpense = computed(() => {
+    const today = new Date();
+    return this.transactions()
+      .filter(t => {
+        const date = new Date(t.date);
+        return (
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear()
+        );
+      })
+      .reduce((sum, t) => sum + t.amount, 0);
+  });
 
-        this.transactions = data;
+  loadingSeconds = signal(0);
+  private loadingTimer: ReturnType<typeof setInterval> | null = null;
 
-        this.calculateSummary();
+  constructor() {
 
-      });
+    effect(() => {
 
-    this.transactionService.loading$
-      .subscribe(loading => this.loading = loading);
+      if (this.loading()) {
+        this.loadingSeconds.set(0);
+        this.loadingTimer ??= setInterval(() => this.loadingSeconds.update(s => s + 1), 1000);
+      } else if (this.loadingTimer) {
+        clearInterval(this.loadingTimer);
+        this.loadingTimer = null;
+      }
+
+    });
 
   }
 
- calculateSummary(): void {
-
-  const today = new Date();
-
-  // Current Month Expense
-  this.currentMonthExpense = this.transactions
-    .filter(t => {
-
-      const date = new Date(t.date);
-
-      return (
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      );
-
-    })
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  // Today's Expense
-  this.todayExpense = this.transactions
-    .filter(t => {
-
-      const date = new Date(t.date);
-
-      return (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      );
-
-    })
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  // Recent Expenses
-  this.recentTransactions = [...this.transactions]
-    .sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
-    .slice(0, 5);
-
-}
+  ngOnDestroy(): void {
+    if (this.loadingTimer) {
+      clearInterval(this.loadingTimer);
+    }
+  }
 
 }
