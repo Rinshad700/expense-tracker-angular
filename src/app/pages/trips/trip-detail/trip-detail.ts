@@ -7,11 +7,12 @@ import { TripExpenseService } from '../../../services/trip-expense.service';
 import { Trip } from '../../../models/trip';
 import { TripExpense } from '../../../models/trip-expense';
 import { calculateExpenseShares, validateCustomSplit } from '../../../utils/trip-settlement';
+import { TripPreviewComponent } from '../../../components/trip-preview/trip-preview';
 
 @Component({
   selector: 'app-trip-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TripPreviewComponent],
   templateUrl: './trip-detail.html',
   styleUrls: ['./trip-detail.css']
 })
@@ -25,6 +26,7 @@ export class TripDetailComponent implements OnInit {
 
   showExpenseForm = false;
   showTripForm = false;
+  showPreview = false;
   editingExpense: TripExpense | null = null;
 
   tripFormData = {
@@ -104,6 +106,10 @@ export class TripDetailComponent implements OnInit {
 
   toggleTripForm() {
     this.showTripForm = !this.showTripForm;
+  }
+
+  togglePreview() {
+    this.showPreview = !this.showPreview;
   }
 
   toggleExpenseForm(expense?: TripExpense) {

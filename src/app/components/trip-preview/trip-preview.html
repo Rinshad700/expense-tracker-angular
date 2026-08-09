@@ -1,0 +1,77 @@
+<div class="preview-overlay" (click)="onClose()"></div>
+
+<div class="preview-card">
+
+  <button class="preview-close" (click)="onClose()">
+    <i class="bi bi-x-lg"></i>
+  </button>
+
+  <div class="preview-content">
+
+    <div class="preview-header">
+      <span class="badge bg-secondary">COMPLETED</span>
+      <h1>{{ trip.name }}</h1>
+      <p *ngIf="trip.location"><i class="bi bi-geo-alt"></i> {{ trip.location }}</p>
+      <p class="preview-dates"><i class="bi bi-calendar-event"></i> {{ trip.startDate }} to {{ trip.endDate }}</p>
+    </div>
+
+    <div class="preview-participants" *ngIf="participants().length > 0">
+      <span class="badge bg-primary" *ngFor="let participant of participants()">{{ participant }}</span>
+    </div>
+
+    <div class="preview-stats">
+      <div class="preview-stat">
+        <small>Total Spent</small>
+        <h3>{{ totalSpent() | currency:'INR':'symbol':'1.2-2' }}</h3>
+      </div>
+      <div class="preview-stat" *ngIf="trip.budget">
+        <small>Budget</small>
+        <h3>{{ trip.budget | currency:'INR':'symbol':'1.2-2' }}</h3>
+      </div>
+      <div class="preview-stat" *ngIf="trip.budget">
+        <small>{{ remainingBudget() >= 0 ? 'Under Budget' : 'Over Budget' }}</small>
+        <h3 [ngClass]="remainingBudget() < 0 ? 'text-danger' : 'text-success'">
+          {{ Math.abs(remainingBudget()) | currency:'INR':'symbol':'1.2-2' }}
+        </h3>
+      </div>
+    </div>
+
+    <div class="preview-section" *ngIf="expenses().length > 0">
+      <h5>Expenses</h5>
+      <div class="preview-expense-row" *ngFor="let expense of expenses()">
+        <div>
+          <div class="preview-expense-title">{{ expense.title }}</div>
+          <div class="preview-expense-sub">{{ expense.category }} &middot; {{ expense.date }} <span *ngIf="expense.paidBy">&middot; Paid by {{ expense.paidBy }}</span></div>
+        </div>
+        <div class="preview-expense-amount">{{ expense.amount | currency:'INR':'symbol':'1.2-2' }}</div>
+      </div>
+    </div>
+
+    <div class="preview-section" *ngIf="expensesByCategory().length > 0">
+      <h5>By Category</h5>
+      <div class="preview-category-row" *ngFor="let item of expensesByCategory()">
+        <span>{{ item[0] }}</span>
+        <span class="fw-bold">{{ item[1] | currency:'INR':'symbol':'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <div class="preview-section" *ngIf="settlementBalances().length > 0">
+      <h5>Settlement</h5>
+      <div class="preview-balance-row" *ngFor="let balance of settlementBalances()">
+        <span>{{ balance.participantName }}</span>
+        <span [ngClass]="balance.amount >= 0 ? 'text-success' : 'text-danger'">
+          {{ balance.amount >= 0 ? '+' : '' }}{{ balance.amount | currency:'INR':'symbol':'1.2-2' }}
+        </span>
+      </div>
+
+      <div class="preview-settlement-plan" *ngIf="settlementPlan().length > 0">
+        <div class="preview-settlement-item" *ngFor="let item of settlementPlan()">
+          <strong>{{ item.from }}</strong> pays <strong>{{ item.to }}</strong>
+          <span class="preview-settlement-amount">{{ item.amount | currency:'INR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

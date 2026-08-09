@@ -112,6 +112,9 @@
           <button class="btn btn-sm btn-outline-primary flex-grow-1" (click)="$event.stopPropagation(); viewTrip(trip.id)">
             View
           </button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="$event.stopPropagation(); previewTrip(trip.id)" title="Preview">
+            <i class="bi bi-eye"></i>
+          </button>
           <button class="btn btn-sm btn-outline-danger" (click)="$event.stopPropagation(); deleteTrip(trip.id)">
             <i class="bi bi-trash"></i>
           </button>
@@ -141,3 +144,9 @@
 <button class="fab" (click)="addTrip()">
   <i class="bi bi-plus-lg"></i>
 </button>
+
+<app-trip-preview
+  *ngIf="previewingTrip()"
+  [trip]="previewingTrip()!"
+  (close)="previewingTrip.set(null)">
+</app-trip-preview>

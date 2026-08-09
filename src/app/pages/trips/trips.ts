@@ -1,14 +1,15 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TripService } from '../../services/trip.service';
 import { TripExpenseService } from '../../services/trip-expense.service';
 import { Trip } from '../../models/trip';
+import { TripPreviewComponent } from '../../components/trip-preview/trip-preview';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TripPreviewComponent],
   templateUrl: './trips.html',
   styleUrls: ['./trips.css']
 })
@@ -28,6 +29,8 @@ export class TripsComponent {
 
   activeTrips = computed(() => this.trips().filter(t => t.status === 'ongoing' || t.status === 'planned'));
   completedTrips = computed(() => this.trips().filter(t => t.status === 'completed'));
+
+  previewingTrip = signal<Trip | null>(null);
 
   getTripTotal(tripId: string): number {
     return this.tripExpenseService.getTripExpenseTotal(tripId);
@@ -51,6 +54,10 @@ export class TripsComponent {
 
   viewTrip(id: string) {
     this.router.navigate(['/trips', id]);
+  }
+
+  previewTrip(id: string) {
+    this.previewingTrip.set(this.trips().find(t => t.id === id) || null);
   }
 
   deleteTrip(id: string) {

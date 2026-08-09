@@ -9,6 +9,9 @@
       <p class="app-topbar-sub">{{ trip.location }}</p>
     </div>
     <div class="d-flex gap-2">
+      <button class="icon-btn" (click)="togglePreview()" *ngIf="trip.status === 'completed'" title="Preview">
+        <i class="bi bi-eye"></i>
+      </button>
       <button class="icon-btn" (click)="closeTrip()" *ngIf="trip.status !== 'completed'" title="Close Trip">
         <i class="bi bi-lock"></i>
       </button>
@@ -394,6 +397,13 @@
 <button class="fab app-hide-desktop" *ngIf="trip" (click)="toggleExpenseForm()">
   <i class="bi bi-plus-lg"></i>
 </button>
+
+<!-- Trip Preview: a shareable, screenshot-friendly summary -->
+<app-trip-preview
+  *ngIf="showPreview && trip"
+  [trip]="trip"
+  (close)="togglePreview()">
+</app-trip-preview>
 
 <div class="container pb-4" *ngIf="!trip">
   <div class="alert alert-warning">
