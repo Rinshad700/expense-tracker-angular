@@ -14,6 +14,7 @@ import {
 import { Trip } from '../models/trip';
 import { db } from '../firebase';
 import { AuthService } from './auth.service';
+import { stripUndefined } from '../utils/strip-undefined';
 
 @Injectable({
   providedIn: 'root'
@@ -100,10 +101,10 @@ export class TripService {
     const uid = this.authService.currentUid;
     if (!uid) return Promise.resolve();
 
-    return addDoc(collection(db, 'users', uid, 'trips'), {
+    return addDoc(collection(db, 'users', uid, 'trips'), stripUndefined({
       ...trip,
       createdAt: new Date().toISOString()
-    });
+    }));
   }
 
   updateTrip(updated: Trip) {
@@ -111,7 +112,7 @@ export class TripService {
     if (!uid) return Promise.resolve();
 
     const { id, ...data } = updated;
-    return updateDoc(doc(db, 'users', uid, 'trips', id), data);
+    return updateDoc(doc(db, 'users', uid, 'trips', id), stripUndefined(data));
   }
 
   deleteTrip(id: string) {
