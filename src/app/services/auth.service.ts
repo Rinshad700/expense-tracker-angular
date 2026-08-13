@@ -3,8 +3,12 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import {
   User,
+  browserLocalPersistence,
+  browserSessionPersistence,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
+  setPersistence,
   signInWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
@@ -47,11 +51,18 @@ export class AuthService {
     return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  signIn(email: string, password: string) {
+  async signIn(email: string, password: string, rememberMe = true) {
+    // "Remember me" unchecked drops to session-only persistence — the login
+    // is forgotten once the browser tab closes instead of surviving restarts.
+    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
     return signInWithEmailAndPassword(auth, email, password);
   }
 
   logOut() {
     return signOut(auth);
+  }
+
+  resetPassword(email: string) {
+    return sendPasswordResetEmail(auth, email);
   }
 }

@@ -1,66 +1,217 @@
 <div class="login-screen">
 
-  <div class="login-card">
+  <div class="login-shell">
 
-    <div class="login-brand">
-      <i class="bi bi-wallet2"></i>
-      <span>Expense Tracker</span>
+    <!-- Hero panel -->
+    <div class="login-hero">
+
+      <div class="hero-blob"></div>
+
+      <div class="hero-inner">
+
+        <div class="login-logo">
+          <i class="bi bi-wallet2"></i>
+        </div>
+
+        <h2 class="hero-brand-title">
+          <span class="brand-main">Expense</span> <span class="brand-accent">Tracker</span>
+        </h2>
+
+        <p class="hero-tagline">
+          Track your expenses. Manage your money.<br>
+          Build a better financial future.
+        </p>
+
+        <svg class="hero-illustration" viewBox="0 0 440 480" aria-hidden="true">
+
+          <defs>
+            <linearGradient id="coinGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f7d571"></stop>
+              <stop offset="100%" stop-color="#dba020"></stop>
+            </linearGradient>
+          </defs>
+
+          <!-- dot accent -->
+          <g fill="rgba(255,255,255,.4)">
+            <circle *ngFor="let d of dotGrid" [attr.cx]="d.x" [attr.cy]="d.y" r="1.8"></circle>
+          </g>
+
+          <!-- plant -->
+          <g class="illus-plant">
+            <path d="M75,378 C58,342 58,292 78,254 C98,292 94,342 75,378 Z" fill="#3f9d6d"></path>
+            <path d="M58,380 C36,356 27,316 42,286 C64,314 68,350 58,380 Z" fill="#2f7d55"></path>
+            <path d="M94,380 C114,356 121,318 108,290 C88,316 84,352 94,380 Z" fill="#55b57f"></path>
+            <rect x="35" y="372" width="82" height="16" rx="5" fill="#c9ccd3"></rect>
+            <path d="M40,388 L112,388 L102,444 L50,444 Z" fill="#d5d8de"></path>
+          </g>
+
+          <!-- wallet + cash -->
+          <g class="illus-wallet">
+            <rect x="88" y="330" width="70" height="24" rx="4" fill="#26a05e" transform="rotate(-8 123 342)"></rect>
+            <rect x="96" y="322" width="70" height="24" rx="4" fill="#2fc06e" transform="rotate(-3 131 334)"></rect>
+            <rect x="300" y="332" width="112" height="82" rx="12" fill="#3550a8"></rect>
+            <rect x="300" y="332" width="112" height="30" rx="12" fill="#4863c4"></rect>
+            <circle cx="356" cy="373" r="8" fill="#a9c3ff"></circle>
+          </g>
+
+          <!-- coin stack -->
+          <g class="illus-coins">
+            <ellipse cx="382" cy="432" rx="30" ry="10" fill="url(#coinGrad)" stroke="#b9821a" stroke-width="1"></ellipse>
+            <ellipse cx="382" cy="420" rx="30" ry="10" fill="url(#coinGrad)" stroke="#b9821a" stroke-width="1"></ellipse>
+            <ellipse cx="382" cy="408" rx="30" ry="10" fill="url(#coinGrad)" stroke="#b9821a" stroke-width="1"></ellipse>
+            <ellipse cx="382" cy="405" rx="22" ry="5" fill="#fce39a" opacity=".7"></ellipse>
+          </g>
+
+          <!-- phone mockup -->
+          <g class="illus-phone">
+            <rect x="130" y="40" width="170" height="340" rx="26" fill="#101b3f"></rect>
+            <rect x="140" y="54" width="150" height="312" rx="16" fill="#ffffff"></rect>
+
+            <text x="156" y="78" class="illus-text illus-text-strong">Overview</text>
+
+            <rect x="150" y="90" width="130" height="98" rx="10" fill="#f4f6fb" stroke="#e7eaf3"></rect>
+            <text x="162" y="110" class="illus-text illus-text-dim">Total Expense</text>
+            <text x="162" y="130" class="illus-text illus-text-value">₹2,450.00</text>
+            <text x="162" y="144" class="illus-text illus-text-dim">This month</text>
+
+            <polyline
+              points="160,172 174,164 188,168 202,150 216,158 230,140 244,148 258,132 272,138"
+              class="illus-sparkline"></polyline>
+            <circle cx="272" cy="138" r="3" fill="#4f8ef7"></circle>
+
+            <text x="150" y="206" class="illus-text illus-text-strong">Categories</text>
+
+            <g class="illus-cat-row">
+              <circle cx="160" cy="226" r="8" fill="#ff6b6b"></circle>
+              <text x="176" y="230" class="illus-text illus-text-cat">Food</text>
+              <text x="270" y="230" class="illus-text illus-text-amt">₹850.00</text>
+            </g>
+
+            <g class="illus-cat-row">
+              <circle cx="160" cy="252" r="8" fill="#4f8ef7"></circle>
+              <text x="176" y="256" class="illus-text illus-text-cat">Transport</text>
+              <text x="270" y="256" class="illus-text illus-text-amt">₹420.00</text>
+            </g>
+
+            <g class="illus-cat-row">
+              <circle cx="160" cy="278" r="8" fill="#ffb648"></circle>
+              <text x="176" y="282" class="illus-text illus-text-cat">Shopping</text>
+              <text x="270" y="282" class="illus-text illus-text-amt">₹320.00</text>
+            </g>
+
+            <g class="illus-cat-row">
+              <circle cx="160" cy="304" r="8" fill="#34c38f"></circle>
+              <text x="176" y="308" class="illus-text illus-text-cat">Bills</text>
+              <text x="270" y="308" class="illus-text illus-text-amt">₹260.00</text>
+            </g>
+
+            <rect x="195" y="370" width="60" height="4" rx="2" fill="#c9d3ea"></rect>
+          </g>
+
+        </svg>
+
+      </div>
+
     </div>
 
-    <h1>{{ mode === 'signin' ? 'Welcome back' : 'Create your account' }}</h1>
-    <p class="login-sub">
-      {{ mode === 'signin' ? 'Sign in to sync your expenses across devices.' : 'Set up an account to save your expenses to the cloud.' }}
-    </p>
+    <!-- Login panel -->
+    <div class="login-panel">
 
-    <form #loginForm="ngForm" (ngSubmit)="submit()">
+      <div class="login-panel-inner">
 
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input
-          type="email"
-          class="form-control"
-          name="email"
-          [(ngModel)]="email"
-          required
-          autocomplete="email">
+        <h1 class="login-heading">
+          <ng-container *ngIf="mode === 'signin'">Welcome Back! 👋</ng-container>
+          <ng-container *ngIf="mode === 'signup'">Create your account</ng-container>
+        </h1>
+
+        <p class="login-sub">
+          {{ mode === 'signin' ? 'Sign in to continue to your Expense Tracker' : 'Set up an account to save your expenses to the cloud.' }}
+        </p>
+
+        <form #loginForm="ngForm" (ngSubmit)="submit()">
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-envelope input-icon"></i>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                [(ngModel)]="email"
+                required
+                autocomplete="email"
+                placeholder="Enter your email">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="login-label-row">
+              <label class="form-label">Password</label>
+              <a class="login-forgot" *ngIf="mode === 'signin'" (click)="forgotPassword()">
+                {{ resetLoading ? 'Sending...' : 'Forgot Password?' }}
+              </a>
+            </div>
+            <div class="input-icon-wrap">
+              <i class="bi bi-lock input-icon"></i>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                name="password"
+                [(ngModel)]="password"
+                required
+                minlength="6"
+                [autocomplete]="mode === 'signin' ? 'current-password' : 'new-password'"
+                placeholder="Enter your password">
+              <button
+                type="button"
+                class="input-icon-toggle"
+                tabindex="-1"
+                (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-check mb-3" *ngIf="mode === 'signin'">
+            <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" [(ngModel)]="rememberMe">
+            <label class="form-check-label" for="rememberMe">Remember me</label>
+          </div>
+
+          <div class="alert alert-success py-2 px-3" *ngIf="resetSent">
+            <i class="bi bi-check-circle me-2"></i>Password reset link sent — check your inbox.
+          </div>
+
+          <div class="alert alert-danger py-2 px-3" *ngIf="error">
+            <i class="bi bi-exclamation-circle me-2"></i>{{ error }}
+          </div>
+
+          <button
+            class="btn btn-primary w-100 login-submit"
+            type="submit"
+            [disabled]="loginForm.invalid || loading">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"></span>
+            <i class="bi bi-box-arrow-in-right" *ngIf="!loading"></i>
+            <span>{{ loading ? 'Please wait...' : (mode === 'signin' ? 'Sign In' : 'Create Account') }}</span>
+          </button>
+
+        </form>
+
+        <p class="login-switch">
+          <ng-container *ngIf="mode === 'signin'">
+            Don't have an account?
+            <a (click)="toggleMode()">Sign up</a>
+          </ng-container>
+          <ng-container *ngIf="mode === 'signup'">
+            Already have an account?
+            <a (click)="toggleMode()">Sign in</a>
+          </ng-container>
+        </p>
+
       </div>
 
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input
-          type="password"
-          class="form-control"
-          name="password"
-          [(ngModel)]="password"
-          required
-          minlength="6"
-          [autocomplete]="mode === 'signin' ? 'current-password' : 'new-password'">
-      </div>
-
-      <div class="alert alert-danger py-2 px-3" *ngIf="error">
-        {{ error }}
-      </div>
-
-      <button
-        class="btn btn-primary w-100"
-        type="submit"
-        [disabled]="loginForm.invalid || loading">
-        <span *ngIf="!loading">{{ mode === 'signin' ? 'Sign In' : 'Create Account' }}</span>
-        <span *ngIf="loading">Please wait...</span>
-      </button>
-
-    </form>
-
-    <p class="login-switch">
-      <ng-container *ngIf="mode === 'signin'">
-        Don't have an account?
-        <a (click)="toggleMode()">Create one</a>
-      </ng-container>
-      <ng-container *ngIf="mode === 'signup'">
-        Already have an account?
-        <a (click)="toggleMode()">Sign in</a>
-      </ng-container>
-    </p>
+    </div>
 
   </div>
 
