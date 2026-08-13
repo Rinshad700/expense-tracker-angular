@@ -393,6 +393,17 @@ a:hover{
     font-size:.95rem;
 }
 
+.app-row-icon.income{
+    background:var(--success-soft);
+    color:var(--success);
+}
+
+.amount-income{
+    font-weight:700;
+    color:var(--success);
+    font-size:.95rem;
+}
+
 .row-delete{
     border:none;
     background:transparent;

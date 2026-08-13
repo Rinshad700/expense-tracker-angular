@@ -8,6 +8,7 @@ import { TripsComponent } from './pages/trips/trips';
 import { TripDetailComponent } from './pages/trips/trip-detail/trip-detail';
 import { TripFormComponent } from './pages/trips/trip-form/trip-form';
 import { LoginComponent } from './pages/login/login';
+import { IncomeComponent } from './pages/income/income';
 import { authGuard, guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -24,6 +25,11 @@ export const routes: Routes = [
   {
     path: 'transactions',
     component: TransactionsComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'income',
+    component: IncomeComponent,
     canActivate: [authGuard]
   },
   {

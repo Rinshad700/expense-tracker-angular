@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { TransactionService } from '../../services/transaction.service';
+import { IncomeService } from '../../services/income.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,7 @@ import { TransactionService } from '../../services/transaction.service';
 export class DashboardComponent implements OnDestroy {
 
   private transactionService = inject(TransactionService);
+  private incomeService = inject(IncomeService);
 
   currentDate = new Date();
 
@@ -21,7 +23,8 @@ export class DashboardComponent implements OnDestroy {
   // fields via .subscribe()) is what lets Angular's zoneless change
   // detection track and safely coalesce these updates on its own.
   transactions = this.transactionService.transactions;
-  loading = this.transactionService.loading;
+  income = this.incomeService.income;
+  loading = computed(() => this.transactionService.loading() || this.incomeService.loading());
 
   recentTransactions = computed(() =>
     [...this.transactions()]
@@ -52,6 +55,12 @@ export class DashboardComponent implements OnDestroy {
       })
       .reduce((sum, t) => sum + t.amount, 0);
   });
+
+  totalIncome = computed(() => this.income().reduce((sum, i) => sum + i.amount, 0));
+
+  totalExpenses = computed(() => this.transactions().reduce((sum, t) => sum + t.amount, 0));
+
+  totalBalance = computed(() => this.totalIncome() - this.totalExpenses());
 
   loadingSeconds = signal(0);
   private loadingTimer: ReturnType<typeof setInterval> | null = null;

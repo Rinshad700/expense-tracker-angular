@@ -1,0 +1,143 @@
+<div class="container pb-4">
+
+    <!-- Top App Bar -->
+    <div class="app-topbar">
+        <button class="back-btn" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+            <h1>Salary / Income</h1>
+            <p class="app-topbar-sub">Add or update your monthly income.</p>
+        </div>
+    </div>
+
+    <!-- Income History -->
+
+    <div class="app-list" *ngIf="income().length > 0">
+
+        <div class="app-row" *ngFor="let entry of income()">
+
+            <div class="app-row-left" (click)="edit(entry)">
+
+                <div class="app-row-icon income">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+
+                <div>
+                    <div class="app-row-title">{{ formatMonth(entry.month) }}</div>
+                    <div class="app-row-sub" *ngIf="entry.note">{{ entry.note }}</div>
+                </div>
+
+            </div>
+
+            <div class="app-row-right">
+                <div class="amount-income">₹ {{ entry.amount | number:'1.0-2' }}</div>
+                <button class="row-delete" (click)="delete(entry.id)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="loading-state" *ngIf="loading() && income().length === 0">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p>Loading your income...</p>
+    </div>
+
+    <div *ngIf="!loading() && income().length === 0" class="empty-state">
+
+        <i class="bi bi-cash-coin"></i>
+        <h4>No Income Added Yet</h4>
+        <p>Tap the + button to add your salary for a month.</p>
+
+    </div>
+
+</div>
+
+<!-- FAB to add income -->
+<button class="fab" *ngIf="!showForm" (click)="toggleForm()">
+    <i class="bi bi-plus-lg"></i>
+</button>
+
+<!-- Add / Edit Income Sheet -->
+<div class="sheet-overlay" *ngIf="showForm" (click)="toggleForm()"></div>
+
+<div class="form-sheet" *ngIf="showForm">
+
+    <div class="form-sheet-header">
+        <h5>{{ isEditing ? 'Update Income' : 'Add Income' }}</h5>
+        <button class="sheet-close" (click)="toggleForm()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form #incomeForm="ngForm" (ngSubmit)="save(incomeForm)" class="form-sheet-body">
+
+        <div class="mb-3">
+
+            <label class="form-label">Month</label>
+
+            <input
+                type="month"
+                class="form-control"
+                name="month"
+                [(ngModel)]="entry.month"
+                #month="ngModel"
+                required>
+
+            <div class="text-danger mt-1" *ngIf="month.invalid && month.touched">
+                Month is required.
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">Amount</label>
+
+            <input
+                type="number"
+                class="form-control"
+                name="amount"
+                [(ngModel)]="entry.amount"
+                #amount="ngModel"
+                required
+                min="1">
+
+            <div class="text-danger mt-1" *ngIf="amount.invalid && amount.touched">
+                Enter a valid amount.
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">Note (optional)</label>
+
+            <input
+                type="text"
+                class="form-control"
+                name="note"
+                [(ngModel)]="entry.note"
+                placeholder="e.g. August salary">
+
+        </div>
+
+        <div class="sticky-actions">
+
+            <button type="button" class="btn btn-outline-secondary" (click)="toggleForm()">
+                Cancel
+            </button>
+
+            <button class="btn btn-primary" type="submit" [disabled]="incomeForm.invalid">
+                <i class="bi bi-check-circle me-2"></i>
+                {{ isEditing ? 'Update' : 'Add' }}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>

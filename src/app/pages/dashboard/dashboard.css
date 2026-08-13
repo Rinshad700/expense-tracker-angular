@@ -22,3 +22,58 @@
     background:var(--primary-soft);
     color:var(--primary);
 }
+
+/* ===========================
+   TOTAL BALANCE
+=========================== */
+
+.balance-card{
+    background:linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color:#fff;
+    border-radius:var(--radius-md);
+    padding:1.25rem 1.4rem;
+    margin-bottom:1rem;
+}
+
+.balance-card.negative{
+    background:linear-gradient(135deg, var(--danger), #b91c1c);
+}
+
+.balance-card small{
+    opacity:.85;
+    font-size:.78rem;
+}
+
+.balance-card h2{
+    font-size:1.9rem;
+    font-weight:700;
+    margin:.25rem 0 .9rem;
+}
+
+.balance-breakdown{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    font-size:.8rem;
+    opacity:.95;
+}
+
+.balance-breakdown i{
+    margin-right:4px;
+    color:#fff !important;
+}
+
+.balance-manage-link{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    margin-top:1rem;
+    font-size:.82rem;
+    font-weight:600;
+    color:#fff;
+}
+
+.balance-manage-link:hover{
+    color:#fff;
+    opacity:.85;
+}
